@@ -20,10 +20,10 @@ export type VehicleModelInfo = {
 	 * List of items that will be welded to the `Main`, If `true` it will weld everything from the parent of the `Main`.
 	 */
 	WeldAssembly?: Instance[] | true;
-	// /**
-	//  * List of items that will be unanchored when the rig is ready.
-	//  */
-	// UnAnchorAssembly?: Instance[] | boolean;
+	/**
+	 * List of items that will be unanchored when the rig is ready.
+	 */
+	UnAnchorAssembly?: Instance[] | boolean;
 	/**
 	 * List of items that will become `Massless`.
 	 */
@@ -48,7 +48,7 @@ export type AutoRigVehicleModel = {
 	Wheels: Folder | Model;
 } & Model;
 /**
- * The Naming convensions for Wheels should be `FL_...`, Only the first capital letters matter.
+ * The Naming convensions for Wheels should be `FL...`, Only the first two capital letters matter.
  * `FL` - FrontLeft
  * `FR` - FrontRight
  * `BL` - BackLeft
@@ -62,13 +62,25 @@ export function RigFromModel(
 		BackWheelsSteerable?: boolean;
 		InverseBackWheels?: boolean;
 		WheelsCollisionGroup?: string;
+		/**
+		 * Defaults to `true`
+		 */
+		WeldAssembly?: VehicleModelInfo["WeldAssembly"];
+		/**
+		 * Defaults to `undefined`
+		 */
+		UnAnchorAssembly?: VehicleModelInfo["UnAnchorAssembly"];
+		/**
+		 * Defaults to `VehicleModel.Main`
+		 */
+		Main?: Part;
 	},
 ): RigFromModelCallback {
 	return (ChassRig) => {
 		return {
-			Main: VehicleModel.Main,
-			WeldAssembly: true,
-			// UnAnchorAssembly: true,
+			Main: Options?.Main ?? VehicleModel.Main,
+			WeldAssembly: Options?.WeldAssembly ?? true,
+			UnAnchorAssembly: Options?.UnAnchorAssembly ?? undefined,
 			Wheels: VehicleModel.Wheels.GetChildren().map((wheel) => {
 				const _M = wheel.Name.match("^(%u+)")[0] as string | undefined;
 				if (_M === undefined) {
@@ -124,6 +136,7 @@ export default class VehicleChassisRig extends Pseudo<{
 	ThrottleFloat = CONSTS.VehicleDefaults.ThrottleFloat;
 	MaxSpeed = CONSTS.VehicleDefaults.MaxSpeed;
 	TurnSpeed = CONSTS.VehicleDefaults.TurnSpeed;
+	Spring = CONSTS.VehicleDefaults.Spring;
 	SpringDamping = CONSTS.VehicleDefaults.SpringDamping;
 	SpringMinLength = CONSTS.VehicleDefaults.SpringMinLength;
 	SpringMaxLength = CONSTS.VehicleDefaults.SpringMaxLength;
@@ -287,6 +300,24 @@ export default class VehicleChassisRig extends Pseudo<{
 	}
 	constructor(__VehicleModelInfo: VehicleModelInfo | RigFromModelCallback) {
 		super("VehicleChassisRig");
+		this.usePropertyRelationBinding(
+			[
+				"SpringDamping",
+				"SpringMinLength",
+				"SpringMaxLength",
+				"SpringFreeLength",
+				"SpringMaxForce",
+				"SpringStiffness",
+				"SpringLimitsEnabled",
+			],
+			"Spring",
+			true,
+		);
+		this.usePropertyRelationBinding(
+			["CylindricalLowerLimit", "CylindricalUpperLimit"],
+			"CylindricalLimitsEnabled",
+			true,
+		);
 		this.Name = this.ClassName;
 		if (typeIs(__VehicleModelInfo, "function")) {
 			this._VehicleModelInfo = __VehicleModelInfo(this);
@@ -348,6 +379,7 @@ export default class VehicleChassisRig extends Pseudo<{
 					this._WeldInstanceDescendants([wheel.Wheel], wheel.GetPrimaryPart());
 					this.useMapping(
 						[
+							"Spring",
 							"SpringDamping",
 							"SpringMinLength",
 							"SpringMaxLength",
@@ -403,7 +435,7 @@ export default class VehicleChassisRig extends Pseudo<{
 		if (this._VehicleModelInfo.Massless) {
 			this._InstanceMasslessDescendants(this._VehicleModelInfo.Massless, true);
 		}
-		/*
+
 		if (this._VehicleModelInfo.UnAnchorAssembly) {
 			const _unAnchor = (t: Instance[]) => {
 				this._ForEachInstance(t, (x) => {
@@ -419,7 +451,7 @@ export default class VehicleChassisRig extends Pseudo<{
 					: this._VehicleModelInfo.UnAnchorAssembly!,
 			);
 		}
-		*/
+
 		this.useReferenceInstanceBehaviour();
 	}
 }

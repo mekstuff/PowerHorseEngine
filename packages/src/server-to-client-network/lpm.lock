@@ -4,7 +4,7 @@
       "name": "@mekstuff-rbxts/core@0.1.5",
       "dependency_scope": "dependencies",
       "install_type": "default",
-      "publish_sig": "7dea07e75e-d9e4d5",
+      "publish_sig": "425fff21d7-d9e4d5",
       "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
       "sem_ver_symbol": "^",
       "traverse_imports": false
@@ -13,7 +13,7 @@
       "name": "@mekstuff-rbxts/imit@0.1.0",
       "dependency_scope": "dependencies",
       "install_type": "default",
-      "publish_sig": "0e37ef27b5-b79e64",
+      "publish_sig": "5c1811e7a3-b79e64",
       "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\imit\\0.1.0\\pkg",
       "sem_ver_symbol": "^",
       "traverse_imports": false

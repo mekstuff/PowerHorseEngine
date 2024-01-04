@@ -15,7 +15,6 @@ export default class VehicleChassisRigWheel extends Pseudo<{
 	Steerable = CONSTS.VehicleDefaults.Steerable;
 	SteerAngle = CONSTS.VehicleDefaults.SteerAngle;
 	SteerInversed = CONSTS.VehicleDefaults.SteerInversed;
-	RaycastSuspension = true;
 	Spring = CONSTS.VehicleDefaults.Spring;
 	SpringLimitsEnabled = CONSTS.VehicleDefaults.SpringLimitsEnabled;
 	SpringDamping = CONSTS.VehicleDefaults.SpringDamping;
@@ -60,6 +59,24 @@ export default class VehicleChassisRigWheel extends Pseudo<{
 	_Main: BasePart | undefined = undefined;
 	constructor(public Wheel: Instance) {
 		super("VehicleChassisRigWheel");
+		this.usePropertyRelationBinding(
+			[
+				"SpringLimitsEnabled",
+				"SpringDamping",
+				"SpringMinLength",
+				"SpringMaxLength",
+				"SpringFreeLength",
+				"SpringMaxForce",
+				"SpringStiffness",
+			],
+			"Spring",
+			true,
+		);
+		this.usePropertyRelationBinding(
+			["CylindricalLowerLimit", "CylindricalUpperLimit"],
+			"CylindricalLimitsEnabled",
+			true,
+		);
 		const PhysicalWheel = new Instance("Part");
 		this._dev.PhysicalWheel = PhysicalWheel;
 		PhysicalWheel.Name = this._id;
@@ -200,41 +217,6 @@ export default class VehicleChassisRigWheel extends Pseudo<{
 					}, ["AttachmentAlignment"]),
 				);
 
-				MainServant.Keep(
-					this.usePropertyEffect(() => {
-						const LastSpringLength = this.SpringFreeLength;
-						const Stepped = RunServiceStepped.Connect((delta) => {
-							const WheelRadius = PhysicalWheel.Size.X / 2;
-							const WheelPosRelative = Attachment0.WorldCFrame.PointToWorldSpace(
-								new Vector3(0, WheelRadius, 0).mul(_getAttachmentAlignmentValue()),
-							);
-							const SpringDirection = this._Main!.CFrame.UpVector.mul(-1);
-							const RayOrigin = WheelPosRelative;
-							// const RayOrigin = PhysicalWheel.Position.sub(Vector3.yAxis.mul(WheelRadius));
-							const RayDirection = SpringDirection.mul(this.SpringFreeLength + WheelRadius);
-							const RayParams = new RaycastParams();
-							RayParams.FilterType = Enum.RaycastFilterType.Exclude;
-							RayParams.FilterDescendantsInstances = [this._Main!.Parent!];
-							const RaycastResults = game.Workspace.Raycast(RayOrigin, RayDirection, RayParams);
-							if (RaycastResults) {
-								// (game.Workspace.FindFirstChild("Part") as Part).Position = RayOrigin.add(RayDirection);
-								// PhysicalWheel.Position = WheelPosRelative.sub(
-								// 	Vector3.yAxis.mul(RaycastResults.Distance - WheelRadius),
-								// );
-								// const WheelVelocity = PhysicalWheel.AssemblyLinearVelocity;
-								// const Velocity = SpringDirection.Dot(WheelVelocity);
-								// const Offset = this.SpringFreeLength - RaycastResults.Distance;
-								// const f = Offset * this.SpringStiffness - Velocity * this.SpringDamping;
-								// this._Main!.ApplyImpulseAtPosition(SpringDirection.mul(f), WheelPosRelative.mul(-1));
-							} else {
-								// PhysicalWheel.Position = WheelPosRelative.sub(Vector3.yAxis.mul(this.SpringFreeLength));
-							}
-						});
-						return () => {
-							Stepped.Disconnect();
-						};
-					}, ["RaycastSuspension"]),
-				);
 				return () => {
 					MainServant.Destroy();
 				};

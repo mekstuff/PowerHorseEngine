@@ -1182,10 +1182,10 @@ export abstract class Pseudo<T extends object = {}> {
 				if (t[RelationProperty] !== RelationValue) {
 					// Hide attributes
 					RelationalProperties.forEach((prop) => {
-						HIDDEN_ATTRIBUTES.push(prop);
-						if (!t[prop]) { // eslint-disable-line
+						if (t[prop] === undefined) {
 							return; // ^^ so it will error if the relational prop is not a member.
 						}
+						HIDDEN_ATTRIBUTES.push(prop);
 						if (this._referenceInstance) {
 							AssignAttributeValue(this._referenceInstance, prop, undefined);
 						}

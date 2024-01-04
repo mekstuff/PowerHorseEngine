@@ -1,17 +1,26 @@
 import { VehicleChassisRig, VehicleChassisRigWheel } from "@mekstuff-rbxts/vehicle-chassis-rig";
 import { AutoRigVehicleModel, RigFromModel } from "../VehicleChassisRig";
 
-const TestWheelModel = game.Workspace.FindFirstChild("TestWheel") as {
-	FL: BasePart;
-	FR: BasePart;
-	BR: BasePart;
-	BL: BasePart;
-	Main: BasePart;
-} & Model;
-const TestWheel_FL = new VehicleChassisRigWheel(TestWheelModel.FL);
-TestWheel_FL.AttachmentAlignment = "Right";
-TestWheel_FL.Parent = TestWheelModel;
-TestWheel_FL._Main = TestWheelModel.Main;
+const Car = game.Workspace.FindFirstChild("Car") as AutoRigVehicleModel;
+const ChassisRig = new VehicleChassisRig(
+	RigFromModel(Car, {
+		WheelsCollisionGroup: "CarWheel",
+	}),
+);
+
+ChassisRig.Parent = Car;
+
+// const TestWheelModel = game.Workspace.FindFirstChild("TestWheel") as {
+// 	FL: BasePart;
+// 	FR: BasePart;
+// 	BR: BasePart;
+// 	BL: BasePart;
+// 	Main: BasePart;
+// } & Model;
+// const TestWheel_FL = new VehicleChassisRigWheel(TestWheelModel.FL);
+// TestWheel_FL.AttachmentAlignment = "Right";
+// TestWheel_FL.Parent = TestWheelModel;
+// TestWheel_FL._Main = TestWheelModel.Main;
 // const TestWheel_FR = new VehicleChassisRigWheel(TestWheelModel.FR);
 // TestWheel_FR.AttachmentAlignment = "Left";
 // TestWheel_FR.Parent = TestWheelModel;
