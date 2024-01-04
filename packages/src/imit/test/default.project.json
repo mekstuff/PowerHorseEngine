@@ -1,0 +1,46 @@
+{
+  "name": "phe-imit-test",
+  "globIgnorePaths": [
+    "**/package.json",
+    "**/tsconfig.json"
+  ],
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$className": "ReplicatedStorage",
+      "include": {
+        "$path": "../../../include",
+        "node_modules": {
+          "$className": "Folder",
+          "@rbxts": {
+            "$path": "../node_modules/@rbxts"
+          },
+          "@mekstuff-rbxts": {
+            "$path": "../node_modules/@mekstuff-rbxts"
+          }
+        }
+      },
+      "imit": {
+        "$path": "out/src"
+      },
+      "shared": {
+        "$path": "out/test/src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "$className": "ServerScriptService",
+      "server": {
+        "$path": "out/test/src/server"
+      }
+    },
+    "StarterPlayer": {
+      "$className": "StarterPlayer",
+      "StarterPlayerScripts": {
+        "$className": "StarterPlayerScripts",
+        "client": {
+          "$path": "out/test/src/client"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "pkgs": {
+    "@mekstuff-rbxts/core@0.1.5": {
+      "name": "@mekstuff-rbxts/core@0.1.5",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "7dea07e75e-d9e4d5",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    },
+    "@mekstuff-rbxts/servant@0.1.5": {
+      "name": "@mekstuff-rbxts/servant@0.1.5",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "081bce2061-e5cb18",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\servant\\0.1.5\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    },
+    "@mekstuff-rbxts/primitive@0.1.0": {
+      "name": "@mekstuff-rbxts/primitive@0.1.0",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "efd9ac8fd8-40c973",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\primitive\\0.1.0\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    },
+    "@mekstuff-rbxts/serializer@0.1.0": {
+      "name": "@mekstuff-rbxts/serializer@0.1.0",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "88a58054b6-b29556",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\serializer\\0.1.0\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "pkgs": {
+    "@mekstuff-rbxts/core@0.1.5": {
+      "name": "@mekstuff-rbxts/core@0.1.5",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "7dea07e75e-d9e4d5",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    },
+    "@mekstuff-rbxts/servant@0.1.5": {
+      "name": "@mekstuff-rbxts/servant@0.1.5",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "081bce2061-e5cb18",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\servant\\0.1.5\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    }
+  }
+}

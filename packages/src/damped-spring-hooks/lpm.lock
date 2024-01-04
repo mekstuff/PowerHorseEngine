@@ -1,0 +1,22 @@
+{
+  "pkgs": {
+    "@mekstuff-rbxts/damped-spring@0.1.0": {
+      "name": "@mekstuff-rbxts/damped-spring@0.1.0",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "bf0beb9b01-1c91f2",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\damped-spring\\0.1.0\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    },
+    "@mekstuff-rbxts/core@0.1.5": {
+      "name": "@mekstuff-rbxts/core@0.1.5",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "7dea07e75e-d9e4d5",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    }
+  }
+}

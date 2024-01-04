@@ -1,0 +1,13 @@
+{
+  "pkgs": {
+    "@mekstuff-rbxts/threader@0.1.0": {
+      "name": "@mekstuff-rbxts/threader@0.1.0",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "aa9b29bf35-15b5a5",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\threader\\0.1.0\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    }
+  }
+}

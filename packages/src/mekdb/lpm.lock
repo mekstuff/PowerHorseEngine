@@ -1,0 +1,13 @@
+{
+  "pkgs": {
+    "@mekstuff-rbxts/primitive@0.1.0": {
+      "name": "@mekstuff-rbxts/primitive@0.1.0",
+      "dependency_scope": "dependencies",
+      "install_type": "default",
+      "publish_sig": "efd9ac8fd8-40c973",
+      "resolve": "C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\primitive\\0.1.0\\pkg",
+      "sem_ver_symbol": "^",
+      "traverse_imports": false
+    }
+  }
+}
