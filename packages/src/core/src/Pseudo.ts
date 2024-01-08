@@ -1113,7 +1113,7 @@ export abstract class Pseudo<T extends object = {}> {
 				CreateNewInstance = true;
 			} else if (typeIs(this._ReferenceInstanceType, "Instance")) {
 				assert(
-					this._ReferenceInstanceType.GetAttribute(_PseudoIdentificationAttrServerName) !== undefined,
+					this._ReferenceInstanceType.GetAttribute(_PseudoIdentificationAttrServerName) === undefined,
 					`_pseudoid already existed on instance ${this._ReferenceInstanceType.ClassName} || ${this._ReferenceInstanceType.Name}`,
 				);
 				CreateNewInstance = false;
