@@ -1048,19 +1048,16 @@ export abstract class Pseudo<T extends object = {}> {
 						continue;
 					}
 					const tprops = a.split(DEPS_STRING_ID_SEPERATOR);
-					let foundProp = false;
 					for (const prop of tprops) {
 						if (prop === key) {
 							for (const data of b) {
 								callusePropertyEffectObjectCallback(data);
 							}
-							foundProp = true;
-							break;
+							break; // breaks out of the split loop if the depstring is "Name...Cart...Prop" and we found Cart, no need to continue to prop
 						}
 					}
-					if (foundProp) {
-						break;
-					}
+					// Due to the ability to have "joined" deps, we cannot break this loop if the prop was found previously
+					// since all cases with only dependency list of "Name" will run but if another has a dependency list of "Name" & "Surname", it will not run. So must not break the loop.
 				}
 				//calling no deps effects[*]
 				_usePropertyEffect.get("*")?.forEach((obj) => {
