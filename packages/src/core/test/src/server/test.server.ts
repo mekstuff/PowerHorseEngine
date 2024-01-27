@@ -1,28 +1,30 @@
 /* eslint-disable roblox-ts/no-private-identifier */
 
-import { GetPseudoById, GetPseudoFromObject, Pseudo, Servant } from "@mekstuff-rbxts/core";
+import { Pseudo } from "@mekstuff-rbxts/core";
 
 class Test extends Pseudo {
-	Angle0 = 0;
-	Angle1 = 0;
+	Property = 0;
+	PropertyNested = true;
 	constructor() {
 		super("Test");
-		this.Parent = game.Workspace;
-		this.usePropertyEffect(() => {
-			print("Angle0 || Angle1 Update: ", this.Angle0, this.Angle1);
-		}, ["Angle0", "Angle1"]);
-		this.usePropertyEffect(() => {
-			print("Angle0 Update: ", this.Angle0, this.Angle1);
-		}, ["Angle0"]);
-		this.usePropertyEffect(() => {
-			print("Angle1 Update: ", this.Angle1, this.Angle1);
-		}, ["Angle1"]);
-		this.useReferenceInstanceBehaviour();
+		const ue = this.usePropertyEffect(() => {
+			if (this.Property !== 0) {
+				print("Property updated: ", this.Property);
+				// const c = this.usePropertyEffect(() => {
+				// 	print("Property nested updated: ", this.PropertyNested);
+				// 	return () => {
+				// 		print("Property nested cleanup");
+				// 	};
+				// }, ["PropertyNested"]);
+				ue.Destroy();
+				return () => {
+					print("Property cleanup");
+					// c.Destroy();
+				};
+			}
+		}, ["Property"]);
+		this.GetRef().Parent = game.Workspace;
 	}
 }
 
-const v = new Test();
-// while (true) {
-// 	task.wait(0.4);
-// }
-// v.Destroy();
+new Test();

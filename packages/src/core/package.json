@@ -15,13 +15,15 @@
   "keywords": [],
   "author": "Mekstuff <contact@mekstuff.com> (https://github.com/mekstuff)",
   "types": "out/index.d.ts",
-  "local": {
+  ".zen": {
     "dependencies": {
-      "@mekstuff-rbxts/threader": "^0.1.0"
+      "@mekstuff-rbxts/threader": {
+        "version": "^0.1.0"
+      }
     }
   },
   "dependencies": {
-    "@mekstuff-rbxts/threader": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\threader\\0.1.0\\pkg"
+    "@mekstuff-rbxts/threader": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\threader\\0.1.0"
   },
   "devDependencies": {
     "@rbxts/compiler-types": "2.1.0-types.1",

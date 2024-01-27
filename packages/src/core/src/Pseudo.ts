@@ -13,7 +13,7 @@ import { Servant } from "./Servant";
 import { _typeIs } from "./typeIs";
 
 type UnknownArray = { [key: string]: unknown };
-type CreatableReferenceInstanceTypes = Instance | keyof CreatableInstances;
+type CreatableReferenceInstanceTypes = Instance | keyof CreatableInstances | (() => Instance);
 
 let CHARSARRAY: string[] | undefined;
 
@@ -96,42 +96,61 @@ const MUST_BE_DEV_APPROPRIATE = (key: unknown) => {
 type useMapping_mapsdeps = Instance | Pseudo | object;
 //usePropertyEffect types
 type usePropertyEffectCleanupfunc = (isDestroying?: boolean) => void;
-type usePropertyEffectCallback = () => void | usePropertyEffectCleanupfunc | Servant | Promise<unknown>;
-type _usePropertyEffectMap = Map<
-	string,
-	{
-		callback: usePropertyEffectCallback;
-		cleanup?: (isDestroying?: boolean) => void;
-	}[]
->;
+type usePropertyEffectCleanup = usePropertyEffectCleanupfunc | Servant | Promise<unknown>;
+type _usePropertyEffectMap = Map<string, useEffectServant[]>;
+type _usePropertyEffectQuickSearchMap = Map<string, number>;
+export type usePropertyEffectCallback = () => void | usePropertyEffectCleanupfunc | Servant | Promise<unknown>;
 
-function callusePropertyEffectObjectCallback(obj: {
-	callback: usePropertyEffectCallback;
-	cleanup?: (() => void) | Servant | Promise<unknown>;
-}) {
-	if (obj.cleanup) {
-		if (typeIs(obj.cleanup, "function")) {
-			obj.cleanup();
-		} else if (Promise.is(obj.cleanup)) {
-			if (obj.cleanup.getStatus() === "Started") {
-				warn(`Unresolved Promise ${tostring(obj.cleanup)} will be cancelled.`);
-				obj.cleanup.cancel();
-			}
-		} else if (_typeIs(obj.cleanup, "Servant")) {
-			obj.cleanup.Destroy();
-		}
-	}
-	obj.cleanup = undefined;
-	const ret = obj.callback();
-	if (typeIs(ret, "function")) {
-		obj.cleanup = ret;
-	} else if (Promise.is(ret)) {
-		obj.cleanup = ret;
-	} else if (_typeIs(ret, "Servant")) {
-		obj.cleanup = ret;
-	}
+type useEffectServant = Servant & {
+	_dev: {
+		ue: {
+			cb: usePropertyEffectCallback;
+			cleanup?: usePropertyEffectCleanup;
+		};
+	};
+};
+
+function CreateuseEffectServant(): useEffectServant {
+	const Servant = CreateServant();
+	Servant._dev.ue = {};
+	return Servant as useEffectServant;
 }
 
+function CalluseEffectServant(ueServant: useEffectServant, isDestroying?: boolean, onlyCleanup?: boolean) {
+	const _cleanup = ueServant._dev.ue.cleanup;
+	if (_cleanup) {
+		if (typeIs(_cleanup, "function")) {
+			_cleanup(isDestroying);
+		} else if (Promise.is(_cleanup)) {
+			if (_cleanup.getStatus() === "Started") {
+				warn(`Unresolved Promise ${tostring(_cleanup)} from useEffectServant will be cancelled.`);
+				_cleanup.cancel();
+			}
+		} else if (_typeIs(_cleanup, "Servant")) {
+			_cleanup.Destroy();
+		}
+	}
+	ueServant._dev.ue.cleanup = undefined;
+	if (onlyCleanup) {
+		return;
+	}
+	const results = ueServant._dev.ue.cb();
+	if (typeIs(results, "function")) {
+		ueServant._dev.ue.cleanup = results;
+	} else if (Promise.is(results)) {
+		ueServant._dev.ue.cleanup = results;
+	} else if (_typeIs(results, "Servant")) {
+		ueServant._dev.ue.cleanup = results;
+	} else {
+		if (results !== undefined) {
+			warn(
+				`Unknown return type from usePropertyEffect!, Got ${typeOf(
+					results,
+				)}, but expected either: function, Servant, Promise or nil.`,
+			);
+		}
+	}
+}
 export interface Pseudo {
 	/**
 	 * Gets the currently assigned properties of the `pseudo` (including nils)
@@ -249,7 +268,11 @@ function AssignAttributeValue(ReferenceInstance: Instance, key: unknown, value: 
 			return;
 		}
 		const [success, reason] = pcall(() => {
-			ReferenceInstance.SetAttribute(key, value as AttributeValue);
+			if (_typeIs(value, "Pseudo")) {
+				ReferenceInstance.SetAttribute(key, `***${tostring(value)}***`); // Display Pseudo's values tostring values.
+			} else {
+				ReferenceInstance.SetAttribute(key, value as AttributeValue);
+			}
 		});
 		// make a somewhat important check using string match when the error message could be changed by ROBLOX anytime soon? why not.
 		if (typeIs(reason, "string") && reason.lower().match("^attribute name contains illegal character")[0]) {
@@ -411,6 +434,10 @@ export abstract class Pseudo<T extends object = {}> {
 	 */
 	private _referenceInstance: Instance | undefined = undefined;
 
+	protected useAssignReadonlyProperty(Property: string, Value: unknown) {
+		this.useSetNewIndexAssignment(Property, Value, false, false);
+	}
+
 	/**
 	 * Checks if the class inherits another class
 	 */
@@ -452,7 +479,7 @@ export abstract class Pseudo<T extends object = {}> {
 				return str;
 			}
 		}
-		return ".";
+		throw `You may have accidentally passed an incorrect param to your use__Effect, the _GetDependencyArrayStringId() expected a table or "*", but instead got ${dependencies}`;
 	}
 
 	/**
@@ -674,6 +701,18 @@ export abstract class Pseudo<T extends object = {}> {
 	}
 
 	/**
+	 * Wraps the `usePropertyRender` in a coroutine.
+	 *
+	 * @todo Only a single coroutine should be spawned for each usePropertyRenderWrap callback instead of the current behaviour
+	 * of all callbacks having their own threads.
+	 */
+	public usePropertyRenderWrap(callback: usePropertyEffectCallback, dependencies?: string[]): PHe.Pseudos["Servant"] {
+		return this.usePropertyRender(() => {
+			coroutine.wrap(callback)();
+		}, dependencies);
+	}
+
+	/**
 	 * Wraps `usePropertyEffect` but only triggers callback after the initial render.
 	 *
 	 * @remarks
@@ -689,6 +728,18 @@ export abstract class Pseudo<T extends object = {}> {
 				return;
 			}
 			callback(...params);
+		}, dependencies);
+	}
+
+	/**
+	 * Wraps the `usePropertyEffect` in a coroutine.
+	 *
+	 * @todo Only a single coroutine should be spawned for each usePropertyEffectWrap callback instead of the current behaviour
+	 * of all callbacks having their own threads.
+	 */
+	public usePropertyEffectWrap(callback: usePropertyEffectCallback, dependencies?: string[]): PHe.Pseudos["Servant"] {
+		return this.usePropertyEffect(() => {
+			coroutine.wrap(callback)();
 		}, dependencies);
 	}
 
@@ -711,10 +762,16 @@ export abstract class Pseudo<T extends object = {}> {
 		if (!this._dev.has("_usePropertyEffect")) {
 			this._dev.assign("_usePropertyEffect", new Map<string, unknown>());
 		}
+		if (!this._dev.has("_usePropertyEffectQuickSearch")) {
+			this._dev.assign("_usePropertyEffectQuickSearch", new Map<string, number>());
+		}
 		if (this.ClassName === "Servant") {
 			throw "You cannot usePropertyEffect on a Servant.";
 		}
 		const _usePropertyEffect = this._dev.get("_usePropertyEffect") as _usePropertyEffectMap;
+		const _usePropertyEffectQuickSearch = this._dev.get(
+			"_usePropertyEffectQuickSearch",
+		) as _usePropertyEffectQuickSearchMap;
 		const depsStr = this._GetDependencyArrayStringId(dependencies);
 
 		//means an empty array was passed, so only render once ("onMount")
@@ -725,13 +782,55 @@ export abstract class Pseudo<T extends object = {}> {
 			}
 			return undefined as unknown as PHe.Pseudos["Servant"];
 		}
-
-		let list = _usePropertyEffect.get(depsStr);
+		if (depsStr !== "*") {
+			// We store the name of every dependency that uses `usePropertyEffect` inside a QuickSearch map, This is so that whenever a property
+			// changes with __newindex, we do not search the entire `_usePropertyEffect` for a key that does not exist.
+			depsStr.split(DEPS_STRING_ID_SEPERATOR).forEach((dep) => {
+				if (dep === "") {
+					return;
+				}
+				const currTargetValue = _usePropertyEffectQuickSearch.get(dep);
+				_usePropertyEffectQuickSearch.set(dep, currTargetValue !== undefined ? currTargetValue + 1 : 1);
+			});
+		}
+		let list = _usePropertyEffect.get(depsStr)!;
 		if (!list) {
 			_usePropertyEffect.set(depsStr, []);
-			list = _usePropertyEffect.get(depsStr);
+			list = _usePropertyEffect.get(depsStr)!;
 		}
-
+		const usePropertyEffectServant = CreateuseEffectServant();
+		usePropertyEffectServant._dev.ue.cb = callback;
+		CalluseEffectServant(usePropertyEffectServant);
+		list.push(usePropertyEffectServant);
+		usePropertyEffectServant.useDestroying(() => {
+			// removing from _usePropertyEffect
+			const indxof = list.indexOf(usePropertyEffectServant);
+			if (indxof !== -1) {
+				if (list.size() === 1) {
+					// If we were the last item in the _usePropertyEffect with this depsStr, then remove the entry record
+					_usePropertyEffect.delete(depsStr);
+				} else {
+					list.remove(indxof);
+				}
+			}
+			// removing from _usePropertyEffectQuickSearch
+			if (depsStr !== "*") {
+				depsStr.split(DEPS_STRING_ID_SEPERATOR).forEach((dep) => {
+					if (dep === "") {
+						return;
+					}
+					const currTargetValue = _usePropertyEffectQuickSearch.get(dep);
+					if (currTargetValue === 1) {
+						_usePropertyEffectQuickSearch.delete(dep);
+						return;
+					}
+					_usePropertyEffectQuickSearch.set(dep, currTargetValue !== undefined ? currTargetValue + -1 : 1);
+				});
+			}
+			CalluseEffectServant(usePropertyEffectServant, true, true);
+		});
+		// usePropertyEffectServant._dev.ue.cb;
+		/*
 		const obj = {
 			callback: callback,
 		};
@@ -755,10 +854,7 @@ export abstract class Pseudo<T extends object = {}> {
 			if (t) {
 				const indexOfObj = t.indexOf(obj);
 				if (indexOfObj !== -1) {
-					const cleanupfunc = t[indexOfObj].cleanup;
-					if (cleanupfunc) {
-						cleanupfunc(true);
-					}
+					callusePropertyEffectObjectCallback(t[indexOfObj], true, true);
 					if (t.size() === 1) {
 						// remove the depsStr from the _usePropertyEffect list since it is empty
 						_usePropertyEffect.delete(depsStr);
@@ -768,6 +864,7 @@ export abstract class Pseudo<T extends object = {}> {
 				}
 			}
 		});
+		*/
 		return usePropertyEffectServant;
 	}
 
@@ -841,6 +938,21 @@ export abstract class Pseudo<T extends object = {}> {
 			this.GetRef().Name = this.Name;
 			this.GetRef().Parent = _typeIs(this.Parent, "Pseudo") ? this.Parent.GetRef() : this.Parent;
 		}, ["Name", "Parent"]);
+	}
+
+	private _useStrictProperties: Callback;
+	/**
+	 * Using strict properties will throw an error if an attempt to __newindex a property that doesn't already exist
+	 * is made. To enable, it is expected that this method is called after you assign your internal properties but before
+	 * you write your class logic.
+	 *
+	 * @param strict
+	 * Setting this to `true` will only throw errors when __newindex is called and the property doesn't exist
+	 * Setting this to `type` will throw an error when __newindex is called and the property doesn't exist OR the property
+	 * exists but the currently assigned type is not of the current value.
+	 */
+	protected useStrictProperties(strict?: true) {
+		this._useStrictProperties(strict);
 	}
 
 	private _useSetNewIndexAssignment: Callback;
@@ -986,12 +1098,21 @@ export abstract class Pseudo<T extends object = {}> {
 			return p;
 		};
 
+		let USE_STRICT_PROPERTIES = false;
 		const ASSIGNING_ATTRIBUTES: Map<string, boolean | undefined> = new Map();
 		const HIDDEN_ATTRIBUTES: string[] = [];
 		const ORIGINAL_THIS_INDEX = (this as unknown as typeof OBJECT_PROXY).__index as typeof OBJECT_PROXY; //store the origin index so we can capture methods.
 		const _DEFINED_NILS: string[] = []; //Incases where you attempt to index child that doesn't seem to exist but the child is actual set to nil by developer.
 		const __newindex = (_: object, key: unknown, value: unknown, allowSameValueWrite?: boolean) => {
 			// assert(this._referenceInstance, `No ReferenceInstance was found, __newindex failed`);
+			if (USE_STRICT_PROPERTIES === true) {
+				const [s, r] = pcall(() => {
+					return (this as unknown as UnknownArray)[key as string];
+				});
+				if (s === false) {
+					throw `{StrictProperty} => ${r}`;
+				}
+			}
 			if (key === "ClassName" && typeIs(value, "string")) {
 				this._classNames.push(value);
 			}
@@ -1041,30 +1162,33 @@ export abstract class Pseudo<T extends object = {}> {
 			const _usePropertyEffect = (OBJECT_PROXY._dev as Map<unknown, unknown>).get(
 				"_usePropertyEffect",
 			) as _usePropertyEffectMap;
-			if (_usePropertyEffect) {
-				for (const [a, b] of _usePropertyEffect) {
-					if (a === "*") {
-						//skip items within [*] since they are called after these.
+			const _usePropertyEffectQuickSearch = (OBJECT_PROXY._dev as Map<unknown, unknown>).get(
+				"_usePropertyEffectQuickSearch",
+			) as _usePropertyEffectQuickSearchMap;
+
+			if (_usePropertyEffectQuickSearch && _usePropertyEffectQuickSearch.get(key as string) !== undefined) {
+				let _targetuseEffectServants: useEffectServant[] = [];
+				for (const [usePropertyEffectKey, usePropertyEffectServants] of _usePropertyEffect) {
+					if (usePropertyEffectKey === "*") {
+						// skip items within [*] since they are called after these.
 						continue;
 					}
-					const tprops = a.split(DEPS_STRING_ID_SEPERATOR);
-					for (const prop of tprops) {
-						if (prop === key) {
-							for (const data of b) {
-								callusePropertyEffectObjectCallback(data);
-							}
-							break; // breaks out of the split loop if the depstring is "Name...Cart...Prop" and we found Cart, no need to continue to prop
-						}
+					// Keys are stored as: __splitter__key01__splitter__key02
+					// So here we split the key and find if any of the keys is the current newindex key.
+					const keySplit = usePropertyEffectKey.split(DEPS_STRING_ID_SEPERATOR);
+					if (keySplit.indexOf(key as string) !== -1) {
+						_targetuseEffectServants = [..._targetuseEffectServants, ...usePropertyEffectServants];
 					}
-					// Due to the ability to have "joined" deps, we cannot break this loop if the prop was found previously
-					// since all cases with only dependency list of "Name" will run but if another has a dependency list of "Name" & "Surname", it will not run. So must not break the loop.
 				}
-				//calling no deps effects[*]
-				_usePropertyEffect.get("*")?.forEach((obj) => {
-					callusePropertyEffectObjectCallback(obj);
+				// Calling deps that contains the newindex key in their keySplit
+				_targetuseEffectServants.forEach((propEffectServant) => {
+					CalluseEffectServant(propEffectServant);
+				});
+				// Calling no deps effects[*]
+				_usePropertyEffect.get("*")?.forEach((propEffectServant) => {
+					CalluseEffectServant(propEffectServant);
 				});
 			}
-
 			// using attributes to display the properties of the pseudo ( only if reference instance exists. )
 			if (this._referenceInstance !== undefined) {
 				if (typeIs(key, "string")) {
@@ -1105,7 +1229,13 @@ export abstract class Pseudo<T extends object = {}> {
 			let CreateNewInstance = true;
 			if (!this._ReferenceInstanceType) {
 				this._ReferenceInstanceType = "Folder";
+			} else if (typeIs(this._ReferenceInstanceType, "function")) {
+				// If a function is passed, call it and use the returned value as the _ReferenceInstanceType.
+				const results = this._ReferenceInstanceType();
+				assert(typeIs(results, "Instance"), "Your _ReferenceInstanceType function did not return an Instance.");
+				this._ReferenceInstanceType = results; // So that the following code treats "_ReferenceInstanceType" as an Instance and not a function.
 			}
+
 			if (typeIs(this._ReferenceInstanceType, "string")) {
 				CreateNewInstance = true;
 			} else if (typeIs(this._ReferenceInstanceType, "Instance")) {
@@ -1160,6 +1290,10 @@ export abstract class Pseudo<T extends object = {}> {
 			});
 			this.Destroying = ReferenceInstance.Destroying; // Remove the "fake" destroying signal
 			this._referenceInstance = ReferenceInstance;
+		};
+
+		this._useStrictProperties = () => {
+			USE_STRICT_PROPERTIES = true;
 		};
 
 		this._useSetNewIndexAssignment = (key, value, allowSameValueWrite, allowNoTypeAndNonMemberCheck) => {
