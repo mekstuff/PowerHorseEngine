@@ -1,3 +1,4 @@
+// TODO: usePropertyEffectWrap doesn't get cleanedup!
 /**
  * Core if PowerHorseEngine "Pseudo" components
  *
@@ -96,16 +97,23 @@ const MUST_BE_DEV_APPROPRIATE = (key: unknown) => {
 type useMapping_mapsdeps = Instance | Pseudo | object;
 //usePropertyEffect types
 type usePropertyEffectCleanupfunc = (isDestroying?: boolean) => void;
-type usePropertyEffectCleanup = usePropertyEffectCleanupfunc | Servant | Promise<unknown>;
+type usePropertyEffectCleanup = usePropertyEffectCleanupfunc | Servant | Promise<unknown> | void;
 type _usePropertyEffectMap = Map<string, useEffectServant[]>;
 type _usePropertyEffectQuickSearchMap = Map<string, number>;
-export type usePropertyEffectCallback = () => void | usePropertyEffectCleanupfunc | Servant | Promise<unknown>;
+/**
+ * @param usePropertyEffectExecutingServant is a Servant that is created for every useEffect call, this Servant is automatically Destroy'd when the callback
+ * cleanup is called. It should be used to keep any items that your useEffect created to verify that they're properly cleaned up even if the cleanup function isn't
+ * called ( Sometimes a cleanup function may not be called if the property changes before the effect finishes executing and the returned function was not met, this can happen
+ * in cases where there's yielding code in your useEffect callback. )
+ */
+export type usePropertyEffectCallback = (usePropertyEffectExecutingServant: Servant) => usePropertyEffectCleanup;
 
 type useEffectServant = Servant & {
 	_dev: {
 		ue: {
 			cb: usePropertyEffectCallback;
 			cleanup?: usePropertyEffectCleanup;
+			executingServants?: Record<string, Servant>;
 		};
 	};
 };
@@ -117,39 +125,52 @@ function CreateuseEffectServant(): useEffectServant {
 }
 
 function CalluseEffectServant(ueServant: useEffectServant, isDestroying?: boolean, onlyCleanup?: boolean) {
-	const _cleanup = ueServant._dev.ue.cleanup;
-	if (_cleanup) {
-		if (typeIs(_cleanup, "function")) {
-			_cleanup(isDestroying);
-		} else if (Promise.is(_cleanup)) {
-			if (_cleanup.getStatus() === "Started") {
-				warn(`Unresolved Promise ${tostring(_cleanup)} from useEffectServant will be cancelled.`);
-				_cleanup.cancel();
+	Promise.try(() => {
+		const _cleanup = ueServant._dev.ue.cleanup;
+		if (_cleanup) {
+			if (typeIs(_cleanup, "function")) {
+				_cleanup(isDestroying);
+			} else if (Promise.is(_cleanup)) {
+				if (_cleanup.getStatus() === "Started") {
+					warn(`Unresolved Promise ${tostring(_cleanup)} from useEffectServant will be cancelled.`);
+					_cleanup.cancel();
+				}
+			} else if (_typeIs(_cleanup, "Servant")) {
+				_cleanup.Destroy();
 			}
-		} else if (_typeIs(_cleanup, "Servant")) {
-			_cleanup.Destroy();
 		}
-	}
-	ueServant._dev.ue.cleanup = undefined;
-	if (onlyCleanup) {
-		return;
-	}
-	const results = ueServant._dev.ue.cb();
-	if (typeIs(results, "function")) {
-		ueServant._dev.ue.cleanup = results;
-	} else if (Promise.is(results)) {
-		ueServant._dev.ue.cleanup = results;
-	} else if (_typeIs(results, "Servant")) {
-		ueServant._dev.ue.cleanup = results;
-	} else {
-		if (results !== undefined) {
-			warn(
-				`Unknown return type from usePropertyEffect!, Got ${typeOf(
-					results,
-				)}, but expected either: function, Servant, Promise or nil.`,
-			);
+		if (ueServant._dev.ue.executingServants) {
+			for (const [_, s] of pairs(ueServant._dev.ue.executingServants)) {
+				s.Destroy();
+			}
+			ueServant._dev.ue.executingServants = undefined;
 		}
-	}
+		ueServant._dev.ue.cleanup = undefined;
+		if (onlyCleanup) {
+			return;
+		}
+		const [executingServant] = ueServant.Keep(CreateServant());
+		ueServant._dev.ue.executingServants = ueServant._dev.ue.executingServants ?? {};
+		ueServant._dev.ue.executingServants[executingServant._id] = executingServant;
+		const results = ueServant._dev.ue.cb(executingServant);
+		if (typeIs(results, "function")) {
+			ueServant._dev.ue.cleanup = results;
+		} else if (Promise.is(results)) {
+			ueServant._dev.ue.cleanup = results;
+		} else if (_typeIs(results, "Servant")) {
+			ueServant._dev.ue.cleanup = results;
+		} else {
+			if (results !== undefined) {
+				warn(
+					`Unknown return type from usePropertyEffect!, Got ${typeOf(
+						results,
+					)}, but expected either: function, Servant, Promise or nil.`,
+				);
+			}
+		}
+	}).catch((err) => {
+		throw `ERROR Occurred when executing your useEffect "${tostring(ueServant)}": ${err}`;
+	});
 }
 export interface Pseudo {
 	/**
@@ -168,6 +189,7 @@ export interface Pseudo {
 		IncludeSignals?: boolean,
 		AsDictionary?: boolean,
 	) => [];
+	x: number;
 }
 
 function ThrowInternalDestroyWarn(Reason: string, Err: unknown) {
@@ -489,8 +511,10 @@ export abstract class Pseudo<T extends object = {}> {
 	 * NOTE: this will only work if the object was destroyed with `Pseudo.Destroy`. If the ReferenceInstance was destroyed, it will not be sequential.
 	 *
 	 * If no ReferenceInstance exists, then it will be sequential by default.
+	 *
+	 * @returns Sevant
 	 */
-	public useDestroying(callback: Callback, sequential?: boolean) {
+	public useDestroying(callback: Callback, sequential?: boolean, noServant?: boolean): Servant {
 		if (!sequential) {
 			this.Destroying.Connect(callback);
 		} else {
@@ -501,6 +525,23 @@ export abstract class Pseudo<T extends object = {}> {
 			existing.push(callback);
 			this._dev.assign("_useDestroySequentialCallbacks", existing);
 		}
+		if ((this as unknown as Pseudo).IsA("Servant")) {
+			return undefined as unknown as Servant;
+		}
+		if (noServant) {
+			return undefined as unknown as Servant;
+		}
+		const s = new Servant();
+		s.useDestroying(
+			() => {
+				const runCallbacks = this._dev.get("_useDestroySequentialCallbacks") as Callback[] | undefined;
+				runCallbacks?.remove(runCallbacks.indexOf(callback));
+				return;
+			},
+			sequential,
+			true,
+		);
+		return s;
 	}
 
 	/**
@@ -538,6 +579,9 @@ export abstract class Pseudo<T extends object = {}> {
 		excludeKeys?: unknown[],
 		IncludeHiddenProps?: boolean,
 	): Servant {
+		this.usePropertyEffect(() => {
+			return;
+		});
 		if (props === "*") {
 			return this.usePropertyEffect(() => {
 				this._getCurrentProperties(excludeKeys, IncludeHiddenProps).forEach((prop) => {
@@ -701,15 +745,16 @@ export abstract class Pseudo<T extends object = {}> {
 	}
 
 	/**
+	 * @deprecated `usePropertyEffect` supports this feature by default.
+	 *
 	 * Wraps the `usePropertyRender` in a coroutine.
 	 *
 	 * @todo Only a single coroutine should be spawned for each usePropertyRenderWrap callback instead of the current behaviour
 	 * of all callbacks having their own threads.
 	 */
 	public usePropertyRenderWrap(callback: usePropertyEffectCallback, dependencies?: string[]): PHe.Pseudos["Servant"] {
-		return this.usePropertyRender(() => {
-			coroutine.wrap(callback)();
-		}, dependencies);
+		warn("`usePropertyRenderWrap` is deprecated, switch to using `usePropertyRender` instead.");
+		return this.usePropertyRender(callback, dependencies);
 	}
 
 	/**
@@ -732,15 +777,16 @@ export abstract class Pseudo<T extends object = {}> {
 	}
 
 	/**
+	 * @deprecated `usePropertyEffect` supports this feature by default.
+	 *
 	 * Wraps the `usePropertyEffect` in a coroutine.
 	 *
 	 * @todo Only a single coroutine should be spawned for each usePropertyEffectWrap callback instead of the current behaviour
 	 * of all callbacks having their own threads.
 	 */
 	public usePropertyEffectWrap(callback: usePropertyEffectCallback, dependencies?: string[]): PHe.Pseudos["Servant"] {
-		return this.usePropertyEffect(() => {
-			coroutine.wrap(callback)();
-		}, dependencies);
+		warn("`usePropertyEffectWrap` is deprecated, switch to using `usePropertyEffect` instead.");
+		return this.usePropertyEffect(callback, dependencies);
 	}
 
 	/**
@@ -750,7 +796,7 @@ export abstract class Pseudo<T extends object = {}> {
 	 * `Callbacks` are not ran in any particular order but do note
 	 * that `independent` callbacks are exeecuted after `dependent` callbacks.
 	 *
-	 * Please note if no dependencies are provided, No Servant will be returned.
+	 * Please note if no dependencies are provided, No Servant will be returned nor will a ExecutingServant be passed to the callback.
 	 *
 	 * Whenever the value changes, Based on what your `usePropertyEffect` returns, the following will happen:
 	 * * If you return a `Promise`, If the `Promise` state is `Started`, then it will will be cancelled.
@@ -776,7 +822,7 @@ export abstract class Pseudo<T extends object = {}> {
 
 		//means an empty array was passed, so only render once ("onMount")
 		if (depsStr === ".") {
-			const cleanup = callback();
+			const cleanup = callback(undefined as never);
 			if (typeIs(cleanup, "function")) {
 				this.useDestroying(cleanup);
 			}
@@ -1377,4 +1423,25 @@ export abstract class Pseudo<T extends object = {}> {
 			},
 		});
 	}
+}
+
+// Reactive Pseudo
+export class reactivePseudo<T = unknown> extends Pseudo {
+	public use(callback: (newValue: T, oldValue: T, reactive: reactivePseudo) => usePropertyEffectCleanup): Servant {
+		let _oldValue: T;
+		this._dev._usecb = callback;
+		return this.usePropertyEffect(() => {
+			const cb = callback(this.value, _oldValue, this);
+			_oldValue = this.value;
+			return cb;
+		}, ["value"]);
+	}
+	constructor(public value: T) {
+		super("reactivePseudo");
+		this.Name = this.ClassName;
+		this.useReferenceInstanceBehaviour();
+	}
+}
+export function Reactive<T = unknown>(defaultValue: T): reactivePseudo<T> {
+	return new reactivePseudo(defaultValue);
 }

@@ -19,6 +19,18 @@ class TestService extends stcnet.server {
 				}),
 			),
 		),
+		$props: this.$p.default(
+			this.$p.object({
+				q: this.$p.object({
+					x: this.$p.number(),
+				}),
+			}),
+			{
+				q: {
+					x: 1,
+				},
+			},
+		),
 	};
 	constructor() {
 		super("TestService");

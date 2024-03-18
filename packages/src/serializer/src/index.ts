@@ -142,12 +142,13 @@ export class Serializer<T = unknown> extends Pseudo {
 		},
 		CFrame: {
 			Encode: (CFrame: CFrame, ...args) => {
+				const [x, y, z, R00, R01, R02, R10, R11, R12, R20, R21, R22] = CFrame.GetComponents();
 				return this._EN_DE.table.Encode(
 					{
-						Position: CFrame.Position,
-						vX: CFrame.RightVector,
-						vY: CFrame.UpVector,
-						vZ: CFrame.LookVector,
+						pos: new Vector3(x, y, z),
+						vX: new Vector3(R00, R10, R20),
+						vY: new Vector3(R01, R11, R21),
+						// vZ: new Vector3(R02, R12, R22),
 					},
 					...args,
 				);
@@ -155,10 +156,10 @@ export class Serializer<T = unknown> extends Pseudo {
 			Decode: (str, ...args) => {
 				const _CFrame = this._EN_DE.table.Decode(str, ...args) as UnknownTable;
 				return CFrame.fromMatrix(
-					_CFrame.Position as Vector3,
+					_CFrame.pos as Vector3,
 					_CFrame.vX as Vector3,
 					_CFrame.vY as Vector3,
-					_CFrame.vZ as Vector3,
+					// _CFrame.vZ as Vector3,
 				);
 			},
 		},
@@ -167,7 +168,7 @@ export class Serializer<T = unknown> extends Pseudo {
 				return `${Color3.R},${Color3.G},${Color3.B}`;
 			},
 			Decode: (str) => {
-				const [r, g, b] = str.match("(%d+),(%d+),(%d+)");
+				const [r, g, b] = str.match("([%d%.]+),([%d%.]+),([%d%.]+)");
 				return new Color3(r as number, g as number, b as number);
 			},
 		},

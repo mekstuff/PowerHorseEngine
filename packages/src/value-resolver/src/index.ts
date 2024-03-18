@@ -87,6 +87,24 @@ export function fromInstanceToCFrame(instance: Instance): CFrame {
 	throw `Unsupported instance provided: "${instance.ClassName}".`;
 }
 
+export function fromInstanceToSize(instance: Instance): Vector3 {
+	if (!typeIs(instance, "Instance")) {
+		throw `Instance expected, got ${typeOf(instance)}`;
+	}
+	if (instance.IsA("Model")) {
+		const [_, size] = instance.GetBoundingBox();
+		return size;
+	} else if (instance.IsA("BasePart")) {
+		return instance.Size;
+	} else if (instance.IsA("Accessory") || instance.IsA("Tool")) {
+		const Handle = instance.FindFirstChild("Handle");
+		if (Handle && Handle.IsA("BasePart")) {
+			return Handle.Size;
+		}
+	}
+	throw `Unsupported instance provided: "${instance.ClassName}".`;
+}
+
 /**
  * Gets the `Vector3` value from an instance.
  */
@@ -151,6 +169,9 @@ const ValueResolver = {
 	GetVector3Value: (...args: Parameters<typeof GetVector3Value>): ReturnType<typeof GetVector3Value> => {
 		return GetVector3Value(...args);
 	},
+	GetBoundingBox: (instance: Instance): LuaTuple<[CFrame, Vector3]> => {
+		return $tuple(GetCFrameValue(instance), fromInstanceToSize(instance));
+	},
 	promises: {
 		fromCFrameToVector3: (
 			...args: Parameters<typeof fromCFrameToVector3>
@@ -209,6 +230,11 @@ const ValueResolver = {
 		GetVector3Value: (...args: Parameters<typeof GetVector3Value>): Promise<ReturnType<typeof GetVector3Value>> => {
 			return new Promise((resolve) => {
 				resolve(GetVector3Value(...args));
+			});
+		},
+		GetBoundingBox: (instance: Instance): Promise<LuaTuple<[CFrame, Vector3]>> => {
+			return new Promise((resolve) => {
+				resolve(ValueResolver.GetBoundingBox(instance));
 			});
 		},
 	},

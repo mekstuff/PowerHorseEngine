@@ -1,0 +1,11 @@
+{
+  "pkgs": {
+    "@mekstuff-rbxts/format": {
+      "signature": "7N3150JuPygynOcKM4whci10Mjk=f34a0d420ff2ce297361",
+      "version": "^0.1.4",
+      "version_resolve": "0.1.4"
+    }
+  },
+  "tree": {},
+  "version": "0"
+}

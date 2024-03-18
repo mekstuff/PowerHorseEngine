@@ -1,0 +1,11 @@
+{
+  "pkgs": {
+    "@mekstuff-rbxts/primitive": {
+      "signature": "tC5uwLyaP3D38heLOSsIUuHOuGs=12c0b2889edf5aa1dc72",
+      "version": "^0.1.0",
+      "version_resolve": "0.1.0"
+    }
+  },
+  "tree": {},
+  "version": "0"
+}

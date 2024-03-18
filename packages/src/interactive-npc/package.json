@@ -19,19 +19,27 @@
   "author": "Mekstuff <contact@mekstuff.com> (https://github.com/mekstuff)",
   "license": "MIT",
   "types": "out/index.d.ts",
-  "local": {
+  ".zen": {
     "dependencies": {
-      "@mekstuff-rbxts/task-scheduler": "^0.1.0",
-      "@mekstuff-rbxts/core": "^0.1.5",
-      "@mekstuff-rbxts/rig-builder": "^1.0.0",
-      "@mekstuff-rbxts/path-computing-service": "^0.1.3"
+      "@mekstuff-rbxts/task-scheduler": {
+        "version": "^0.1.0"
+      },
+      "@mekstuff-rbxts/core": {
+        "version": "^0.1.5"
+      },
+      "@mekstuff-rbxts/rig-builder": {
+        "version": "^1.0.0"
+      },
+      "@mekstuff-rbxts/path-computing-service": {
+        "version": "^0.1.3"
+      }
     }
   },
   "dependencies": {
-    "@mekstuff-rbxts/task-scheduler": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\task-scheduler\\0.1.0\\pkg",
-    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
-    "@mekstuff-rbxts/rig-builder": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\rig-builder\\1.0.0\\pkg",
-    "@mekstuff-rbxts/path-computing-service": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\path-computing-service\\0.1.3\\pkg"
+    "@mekstuff-rbxts/task-scheduler": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\task-scheduler\\0.1.0",
+    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\core\\0.1.5",
+    "@mekstuff-rbxts/rig-builder": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\rig-builder\\1.0.0",
+    "@mekstuff-rbxts/path-computing-service": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\path-computing-service\\0.1.3"
   },
   "devDependencies": {
     "@rbxts/compiler-types": "2.1.0-types.1",

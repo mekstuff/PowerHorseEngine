@@ -1,13 +1,13 @@
 /* eslint-disable roblox-ts/no-private-identifier */
 
 import { Servant, ServantPromise, ServantTrackableItem } from "./Servant";
-import { Pseudo, GetPseudoById, GetPseudoFromObject } from "./Pseudo";
+import { Pseudo, GetPseudoById, GetPseudoFromObject, Reactive, reactivePseudo } from "./Pseudo";
 import { _typeIs } from "./typeIs";
 import { threader, isThreader } from "@mekstuff-rbxts/threader";
 import { DEBUGGER } from "./DEBUG";
 import { Engine } from "./Engine";
 
-export { Pseudo, Servant, ServantPromise, ServantTrackableItem, threader };
+export { Pseudo, Servant, ServantPromise, ServantTrackableItem, threader, Reactive };
 
 declare global {
 	namespace PHe {
@@ -15,6 +15,7 @@ declare global {
 		interface Pseudos {
 			Pseudo: Pseudo;
 			Servant: Servant;
+			reactivePseudo: reactivePseudo;
 		}
 		/**Classes that should be able to be created with `new` constructor*/
 		interface CreateablePseudos {}
@@ -24,6 +25,7 @@ declare global {
 		interface CheckablePseudos {
 			Pseudo: Pseudo;
 			Servant: Servant;
+			reactivePseudo: reactivePseudo;
 			threader: threader;
 		}
 		/**

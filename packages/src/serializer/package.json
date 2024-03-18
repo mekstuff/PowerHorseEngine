@@ -28,12 +28,14 @@
     "prettier": "^2.8.8",
     "typescript": "^5.0.4"
   },
-  "local": {
+  ".zen": {
     "dependencies": {
-      "@mekstuff-rbxts/core": "^0.1.5"
+      "@mekstuff-rbxts/core": {
+        "version": "^0.1.5"
+      }
     }
   },
   "dependencies": {
-    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg"
+    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\core\\0.1.5"
   }
 }

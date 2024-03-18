@@ -1,5 +1,20 @@
 import { Serializer } from "@mekstuff-rbxts/serializer";
 
+// const SerializedStr = `hszr0=t_/>/_{"hszr0=s_/>/_assets":"hszr0=t_/>/_{\"hszr0=n_/>/_1\":\"hszr0=t_/>/_{\\\"hszr0=s_/>/_cf\\\":\\\"hszr0=t_/>/_{\\\\\\\"hszr0=s_/>/_R00\\\\\\\":\\\\\\\"hszr0=n_/>/_1\\\\\\\",\\\\\\\"hszr0=s_/>/_z\\\\\\\":\\\\\\\"hszr0=n_/>/_-6.140167236328125\\\\\\\",\\\\\\\"hszr0=s_/>/_R11\\\\\\\":\\\\\\\"hszr0=n_/>/_1\\\\\\\",\\\\\\\"hszr0=s_/>/_R01\\\\\\\":\\\\\\\"hszr0=n_/>/_0\\\\\\\",\\\\\\\"hszr0=s_/>/_R12\\\\\\\":\\\\\\\"hszr0=n_/>/_0\\\\\\\",\\\\\\\"hszr0=s_/>/_R10\\\\\\\":\\\\\\\"hszr0=n_/>/_0\\\\\\\",\\\\\\\"hszr0=s_/>/_y\\\\\\\":\\\\\\\"hszr0=n_/>/_-27.717042922973633\\\\\\\",\\\\\\\"hszr0=s_/>/_R20\\\\\\\":\\\\\\\"hszr0=n_/>/_0\\\\\\\",\\\\\\\"hszr0=s_/>/_R02\\\\\\\":\\\\\\\"hszr0=n_/>/_0\\\\\\\",\\\\\\\"hszr0=s_/>/_x\\\\\\\":\\\\\\\"hszr0=n_/>/_-13.525558471679688\\\\\\\",\\\\\\\"hszr0=s_/>/_R21\\\\\\\":\\\\\\\"hszr0=n_/>/_0\\\\\\\",\\\\\\\"hszr0=s_/>/_R22\\\\\\\":\\\\\\\"hszr0=n_/>/_1\\\\\\\"}\\\",\\\"hszr0=s_/>/_category\\\":\\\"hszr0=s_/>/_Furniture\\\",\\\"hszr0=s_/>/_posyoffset\\\":\\\"hszr0=n_/>/_0\\\",\\\"hszr0=s_/>/_color\\\":\\\"hszr0=C3_/>/_0.9570364952087402,0.1475498378276825,0.11860762536525726\\\",\\\"hszr0=s_/>/_name\\\":\\\"hszr0=s_/>/_Bed\\\",\\\"hszr0=s_/>/_scale\\\":\\\"hszr0=n_/>/_1\\\"}\"}"}`;
+
+const TestSerializer = new Serializer("hszr0");
+const SpawnLocation = game.Workspace.FindFirstChild("SpawnLocation") as SpawnLocation;
+
+const Encoded = TestSerializer.Encode({
+	CF: SpawnLocation.CFrame,
+});
+
+const res = TestSerializer.Decode(Encoded) as unknown;
+
+print(res);
+SpawnLocation.CFrame = (res as { CF: CFrame }).CF;
+
+/*
 const TestSerializer = new Serializer("123");
 
 const EventTest = new Instance("RemoteEvent");
@@ -14,7 +29,7 @@ const Encoded = TestSerializer.Encode({
 	string: "Hello",
 	number: 69,
 	boolean: false,
-	table: { t: true },
+	table: { t: true, q: new Color3(255, 255, 255) },
 	BrickColor: new BrickColor("Buttermilk"),
 	CatalogSearchParams: new CatalogSearchParams(),
 	CFrame: new CFrame(10, 40, 15),
@@ -48,3 +63,4 @@ game.GetService("Players").PlayerAdded.Connect((player) => {
 	EventTest.FireClient(player, Encoded);
 });
 print(Encoded.size(), tick() - initTime);
+*/

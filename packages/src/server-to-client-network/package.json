@@ -16,15 +16,19 @@
   "author": "mekstuff <contact@mekstuff.com> (https://github.com/mekstuff)",
   "license": "MIT",
   "types": "out/index.d.ts",
-  "local": {
+  ".zen": {
     "dependencies": {
-      "@mekstuff-rbxts/core": "^0.1.5",
-      "@mekstuff-rbxts/imit": "^0.1.0"
+      "@mekstuff-rbxts/core": {
+        "version": "^0.1.5"
+      },
+      "@mekstuff-rbxts/imit": {
+        "version": "^0.1.0"
+      }
     }
   },
   "dependencies": {
-    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
-    "@mekstuff-rbxts/imit": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\imit\\0.1.0\\pkg"
+    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\core\\0.1.5",
+    "@mekstuff-rbxts/imit": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\imit\\0.1.0"
   },
   "devDependencies": {
     "@rbxts/compiler-types": "2.1.0-types.1",

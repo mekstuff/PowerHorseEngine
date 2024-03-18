@@ -16,15 +16,19 @@
   "author": "Mekstuff <contact@mekstuff.com> (https://github.com/mekstuff)",
   "license": "MIT",
   "types": "out/index.d.ts",
-  "local": {
+  ".zen": {
     "dependencies": {
-      "@mekstuff-rbxts/core": "^0.1.5",
-      "@mekstuff-rbxts/signal": "^0.1.7"
+      "@mekstuff-rbxts/core": {
+        "version": "^0.1.5"
+      },
+      "@mekstuff-rbxts/signal": {
+        "version": "^0.1.7"
+      }
     }
   },
   "dependencies": {
-    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
-    "@mekstuff-rbxts/signal": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\signal\\0.1.7\\pkg"
+    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\core\\0.1.5",
+    "@mekstuff-rbxts/signal": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\signal\\0.1.7"
   },
   "devDependencies": {
     "@rbxts/compiler-types": "2.1.0-types.1",

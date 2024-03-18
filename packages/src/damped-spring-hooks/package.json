@@ -29,15 +29,19 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
-    "@mekstuff-rbxts/damped-spring": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\damped-spring\\0.1.0\\pkg",
     "@rbxts/ripple": "^0.7.1",
-    "@rbxts/roact": "npm:@rbxts/react-ts"
+    "@rbxts/roact": "npm:@rbxts/react-ts",
+    "@mekstuff-rbxts/damped-spring": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\damped-spring\\0.1.0",
+    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\core\\0.1.5"
   },
-  "local": {
+  ".zen": {
     "dependencies": {
-      "@mekstuff-rbxts/damped-spring": "^0.1.0",
-      "@mekstuff-rbxts/core": "^0.1.5"
+      "@mekstuff-rbxts/damped-spring": {
+        "version": "^0.1.0"
+      },
+      "@mekstuff-rbxts/core": {
+        "version": "^0.1.5"
+      }
     }
   }
 }

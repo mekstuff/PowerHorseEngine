@@ -1,10 +1,13 @@
 const CONSTS = {
 	VehicleDefaults: {
+		ReverseMaxSpeed: undefined,
+		ReverseTorque: undefined,
 		MaxSpeed: 25,
 		Torque: 6,
 		ThrottleFloat: 0,
 		TurnSpeed: 0.6,
 		MaxSteerAngle: 35,
+		MaxSteerAngleDecay: 0.05,
 		SteerFloat: 0,
 		Steerable: true,
 		SteerAngle: 0,
@@ -26,10 +29,26 @@ const CONSTS = {
 		CylindricalMaxAngularAcceleration: 500000,
 		CylindricalMaxTorque: 1000,
 		Attachment0OrientationSpeed: 0.4,
+		WheelSpringsVisible: false,
 		WheelSize: new Vector3(2, 2, 2),
 		WheelsVisible: true,
 		WheelsMotor: true,
 		WheelsPhysicalProperties: new PhysicalProperties(0.7, 1, 0.5, 1, 1),
+		WheelShape: Enum.PartType.Cylinder,
+
+		Mass: 0,
+		MassRelativity: "Main",
+		MassRelativeOffset: new Vector3(0, 0, 0),
+		ShowMassInstances: false,
+
+		//
+		BikeOrientationMaxTorque: 1000000,
+		BikeOrientationResponsiveness: 10,
+		BikeXAxisRotation: 0,
+		BikeYAxisRotation: 0,
+		BikeZAxisRotation: 0,
+		AutoBikeZAxisRotation: true,
+		AutoBikeZAxisRotationAngle: 25,
 	},
 };
 

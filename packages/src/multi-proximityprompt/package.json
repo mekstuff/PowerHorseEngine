@@ -1,0 +1,43 @@
+{
+  "name": "@mekstuff-rbxts/multi-proximityprompt",
+  "version": "0.1.0",
+  "description": "",
+  "main": "out/init.lua",
+  "files": [
+    "out"
+  ],
+  "scripts": {
+    "build": "rbxtsc",
+    "watch": "rbxtsc -w --type=game -p test -i ../../include",
+    "serve": "rojo serve test",
+    "prepack": "yarn build"
+  },
+  "keywords": [],
+  "author": "mekstuff <contact@mekstuff.com> (https://github.com/mekstuff)",
+  "license": "MIT",
+  "types": "out/index.d.ts",
+  "devDependencies": {
+    "@rbxts/compiler-types": "2.1.0-types.1",
+    "@rbxts/types": "^1.0.688",
+    "@typescript-eslint/eslint-plugin": "^5.59.9",
+    "@typescript-eslint/parser": "^5.59.9",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-roblox-ts": "^0.0.35",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
+  },
+  ".zen": {
+    "dependencies": {
+      "@mekstuff-rbxts/core": {
+        "import": false,
+        "traverse_imports": false,
+        "version": "^0.1.5"
+      }
+    }
+  },
+  "dependencies": {
+    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\core\\0.1.5"
+  }
+}

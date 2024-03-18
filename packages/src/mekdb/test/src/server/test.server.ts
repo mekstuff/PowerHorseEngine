@@ -1,6 +1,20 @@
-import { OrderedDataStoreTest, SuphiDataStoreTest } from "./Databases";
+/*eslint-disable */
+class y {
+    constructor(q: number){
 
-const v = OrderedDataStoreTest.GetSortedAsyncUntil(100, true)[0].value;
+    }
+}
+
+class x extends y {
+    Async(){}
+	constructor() {
+		super(1);
+	}
+}
+
+// import { OrderedDataStoreTest, SuphiDataStoreTest } from "./Databases";
+
+// const v = OrderedDataStoreTest.GetSortedAsyncUntil(100, true)[0].value;
 // print(OrderedDataStoreTest.GetSortedAsyncUntil(4, true, undefined, undefined, 1));
 // print(SuphiDataStoreTest.HasAsync("MightTea"));
 // SuphiDataStoreTest.IncrementAsync("MightTea", 30);

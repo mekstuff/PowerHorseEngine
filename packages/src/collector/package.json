@@ -15,15 +15,15 @@
   "files": [
     "out"
   ],
-  "local": {
+  ".zen": {
     "dependencies": {
-      "@mekstuff-rbxts/core": "^0.1.5",
-      "@mekstuff-rbxts/servant": "^0.1.5"
+      "@mekstuff-rbxts/core": {
+        "version": "^0.1.5"
+      },
+      "@mekstuff-rbxts/servant": {
+        "version": "^0.1.5"
+      }
     }
-  },
-  "dependencies": {
-    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
-    "@mekstuff-rbxts/servant": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\servant\\0.1.5\\pkg"
   },
   "devDependencies": {
     "@rbxts/compiler-types": "2.1.0-types.1",
@@ -36,5 +36,9 @@
     "eslint-plugin-roblox-ts": "^0.0.35",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\core\\0.1.5",
+    "@mekstuff-rbxts/servant": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\servant\\0.1.5"
   }
 }

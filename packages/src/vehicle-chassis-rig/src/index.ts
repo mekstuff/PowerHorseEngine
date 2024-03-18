@@ -1,5 +1,6 @@
-import VehicleChassisRig, { VehicleModelInfo } from "./VehicleChassisRig";
+import VehicleChassisRig, { VehicleModelInfo, RigFromModel, AutoRigVehicleModel } from "./VehicleChassisRig";
 import VehicleChassisRigWheel from "./VehicleChassisRigWheel";
+import VehicleChassisRigSpringModifier from "./VehicleChassisRigSpringModifier";
 
 declare global {
 	namespace PHe {
@@ -12,4 +13,11 @@ declare global {
 	}
 }
 
-export { VehicleChassisRig, VehicleModelInfo, VehicleChassisRigWheel };
+export {
+	VehicleChassisRig,
+	VehicleModelInfo,
+	VehicleChassisRigWheel,
+	VehicleChassisRigSpringModifier,
+	RigFromModel,
+	AutoRigVehicleModel,
+};

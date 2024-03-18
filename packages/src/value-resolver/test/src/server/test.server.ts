@@ -1,3 +1,1 @@
-import { makeHello } from "@mekstuffphe/core";
-
-makeHello("hi");
+import ValueResolver from "@mekstuff-rbxts/value-resolver";

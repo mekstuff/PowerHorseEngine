@@ -1,12 +1,41 @@
 /* eslint-disable roblox-ts/no-private-identifier */
 
-import { DEBUGGER, Pseudo, Servant } from "@mekstuff-rbxts/core";
+import { Pseudo, Servant } from "@mekstuff-rbxts/core";
 import CONSTS from "./CONSTANTS";
 import ValueResolver from "@mekstuff-rbxts/value-resolver";
 
 const TweenService = game.GetService("TweenService");
-const RunService = game.GetService("RunService");
-const RunServiceStepped = RunService.IsClient() ? RunService.RenderStepped : RunService.Stepped;
+
+/**
+ * Command line executables:
+ *
+ * - Creating a `Face` Part inside a wheel model:
+~~~~~~~~~~ COPY START ~~~~~~~~~~
+local Selection = game:GetService("Selection");
+local updated = {}
+for _,v in Selection:Get() do
+	if not(v:IsA("Model"))then
+		warn(`VehicleChassisRigWheel -> Skipping "{tostring(v)}" as it is not a model.`);
+		continue;
+	end
+	local BoundsCF = v:GetBoundingBox();
+	local _face = Instance.new("Part");
+	_face.Name = "_face";
+	_face.CanCollide = false;
+	_face.CanQuery = false;
+	_face.CanTouch = false;
+	_face.Position = BoundsCF.Position;
+	_face.Size = Vector3.new(1,1,1);
+	_face.Parent = v;
+	table.insert(updated, _face)
+	v.PrimaryPart = v.PrimaryPart or _face;
+end
+Selection:Set(updated);
+updated = nil;
+Selection = nil;
+warn(`\n\nVehicleChassisRigWheel -> CTRL+Z Will NOT Undo recent changes!`);
+~~~~~~~~~~ COPY END ~~~~~~~~~~
+ */
 
 export default class VehicleChassisRigWheel extends Pseudo<{
 	PhysicalWheel: Part;
@@ -30,21 +59,20 @@ export default class VehicleChassisRigWheel extends Pseudo<{
 	CylindricalMaxAngularAcceleration = CONSTS.VehicleDefaults.CylindricalMaxAngularAcceleration;
 	CylindricalMaxTorque = CONSTS.VehicleDefaults.CylindricalMaxTorque;
 	Attachment0OrientationSpeed = CONSTS.VehicleDefaults.Attachment0OrientationSpeed;
-	/**
-	 * Only the default Wheel Collision group is automatically created, Any other Collision Groups must be created by you.
-	 * If no wheels use the default Wheel Collision group, it will be unregistered.
-	 */
 	CollisionGroup = "Default";
+
+	SpringVisible = CONSTS.VehicleDefaults.WheelSpringsVisible;
 	Size = CONSTS.VehicleDefaults.WheelSize;
 	Visible = CONSTS.VehicleDefaults.WheelsVisible;
 	Motor = CONSTS.VehicleDefaults.WheelsMotor;
 	PhysicalProperties: PhysicalProperties | undefined = CONSTS.VehicleDefaults.WheelsPhysicalProperties;
+	Shape: Enum.PartType = CONSTS.VehicleDefaults.WheelShape;
 	/**
 	 * If the Wheel is on the `Left Side` of the car, then the AttachmentAlignement should be on the `Right`.
 	 */
 	AttachmentAlignment: Enum.HorizontalAlignment | "Left" | "Center" | "Right" = "Right";
 	GetPrimaryPart(): BasePart {
-		const wheel = this._dev.PhysicalWheel;
+		const wheel = this.Wheel;
 		if (wheel.IsA("Model")) {
 			const f = wheel.PrimaryPart ?? wheel.FindFirstChildWhichIsA("BasePart");
 			if (f) {
@@ -79,15 +107,17 @@ export default class VehicleChassisRigWheel extends Pseudo<{
 		);
 		const PhysicalWheel = new Instance("Part");
 		this._dev.PhysicalWheel = PhysicalWheel;
-		PhysicalWheel.Name = this._id;
+		PhysicalWheel.Name = Wheel.Name;
 		this.useMapping(["Size"], [PhysicalWheel]);
 		PhysicalWheel.CFrame = ValueResolver.GetCFrameValue(Wheel);
 		PhysicalWheel.Material = Enum.Material.SmoothPlastic;
-		PhysicalWheel.Anchored = true;
-		PhysicalWheel.Shape = Enum.PartType.Cylinder;
+		PhysicalWheel.Anchored = false;
 
 		this.useMapping(["CollisionGroup"], [PhysicalWheel]);
 
+		this.usePropertyEffect(() => {
+			PhysicalWheel.Shape = this.Shape;
+		}, ["Shape"]);
 		this.usePropertyEffect(() => {
 			PhysicalWheel.Transparency = this.Visible ? 0.1 : 1;
 		}, ["Visible"]);
@@ -166,6 +196,11 @@ export default class VehicleChassisRigWheel extends Pseudo<{
 									CurrentSpring.MinLength = this.SpringMinLength;
 									CurrentSpring.MaxLength = this.SpringMaxLength;
 								}, ["SpringMinLength", "SpringMaxLength"]),
+							);
+							s.Keep(
+								this.usePropertyEffect(() => {
+									CurrentSpring.Visible = this.SpringVisible;
+								}, ["SpringVisible"]),
 							);
 							return () => {
 								s.Destroy();

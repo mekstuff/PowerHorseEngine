@@ -28,14 +28,30 @@
     "prettier": "^2.8.8",
     "typescript": "^5.0.4"
   },
-  "local": {
+  ".zen": {
     "dependencies": {
-      "@mekstuff-rbxts/core": "^0.1.5",
-      "@mekstuff-rbxts/value-resolver": "^0.1.0"
+      "@mekstuff-rbxts/core": {
+        "version": "^0.1.5"
+      },
+      "@mekstuff-rbxts/value-resolver": {
+        "version": "^0.1.0"
+      },
+      "@mekstuff-rbxts/serializer": {
+        "import": false,
+        "traverse_imports": false,
+        "version": "^0.1.0"
+      },
+      "@mekstuff-rbxts/pseudo-pid": {
+        "import": false,
+        "traverse_imports": false,
+        "version": "^0.1.0"
+      }
     }
   },
   "dependencies": {
-    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\core\\0.1.5\\pkg",
-    "@mekstuff-rbxts/value-resolver": "file:C:\\Users\\Lanzo\\.local-package-manager\\packages\\@mekstuff-rbxts\\value-resolver\\0.1.0\\pkg"
+    "@mekstuff-rbxts/core": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\core\\0.1.5",
+    "@mekstuff-rbxts/value-resolver": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\value-resolver\\0.1.0",
+    "@mekstuff-rbxts/serializer": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\serializer\\0.1.0",
+    "@mekstuff-rbxts/pseudo-pid": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\pseudo-pid\\0.1.0"
   }
 }
