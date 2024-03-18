@@ -531,7 +531,7 @@ export abstract class Pseudo<T extends object = {}> {
 		if (noServant) {
 			return undefined as unknown as Servant;
 		}
-		const s = new Servant();
+		const s = CreateServant();
 		s.useDestroying(
 			() => {
 				const runCallbacks = this._dev.get("_useDestroySequentialCallbacks") as Callback[] | undefined;
