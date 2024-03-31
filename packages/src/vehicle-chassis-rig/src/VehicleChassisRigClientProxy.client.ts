@@ -89,30 +89,36 @@ new (class VehicleChassisRigClientProxy extends Pseudo {
 		this.usePropertyEffect(() => {
 			if (this.ChassisType === "Bike") {
 				const BikeServant = new Servant();
-				const BikeOrientationConstraint = Data.main.WaitForChild(
-					"BikeOrientationConstraint",
-				) as AlignOrientation;
+				// const BikeOrientationConstraint = Data.main.WaitForChild(
+				// 	"BikeOrientationConstraint",
+				// ) as AlignOrientation;
 
 				BikeServant.Keep(
 					this.usePropertyEffect(() => {
-						BikeOrientationConstraint.MaxTorque = this.BikeOrientationMaxTorque;
-						BikeOrientationConstraint.Responsiveness = this.BikeOrientationResponsiveness;
+						// BikeOrientationConstraint.MaxTorque = this.BikeOrientationMaxTorque;
+						// BikeOrientationConstraint.Responsiveness = this.BikeOrientationResponsiveness;
 					}, ["BikeOrientationMaxTorque", "BikeOrientationResponsiveness"]),
 				);
 				BikeServant.Keep(
 					this.usePropertyEffect(() => {
-						BikeOrientationConstraint.CFrame = CFrame.Angles(
-							math.rad(this.BikeXAxisRotation),
-							math.rad(this.BikeYAxisRotation),
-							math.rad(this.BikeZAxisRotation),
-						);
+						// const rc = game.GetService("Workspace").Raycast(Data.main.Position, new Vector3(0, 100, 0));
+						// if (!rc) {
+						// 	return;
+						// }
+						// const p1 = Data.main.CFrame.LookVector.Cross(rc.Normal);
+						// BikeOrientationConstraint.CFrame = CFrame.fromMatrix(Vector3.zero, p1, rc.Normal);
+						// BikeOrientationConstraint.CFrame = CFrame.Angles(
+						// 	math.rad(this.BikeXAxisRotation),
+						// 	math.rad(this.BikeYAxisRotation),
+						// 	math.rad(this.BikeZAxisRotation),
+						// );
 					}, ["BikeXAxisRotation", "BikeYAxisRotation", "BikeZAxisRotation"]),
 				);
 				BikeServant.Keep(
 					game.GetService("RunService").Heartbeat.Connect(() => {
-						BikeOrientationConstraint.PrimaryAxis = Vector3.xAxis.add(
-							Data.main.CFrame.LookVector.Cross(Vector3.xAxis).mul(this.SteerFloat * 1),
-						).Unit;
+						// BikeOrientationConstraint.PrimaryAxis = Vector3.xAxis.add(
+						// 	Data.main.CFrame.LookVector.Cross(Vector3.xAxis).mul(this.SteerFloat * 1),
+						// ).Unit;
 					}),
 				);
 				return () => {

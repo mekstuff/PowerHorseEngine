@@ -30,7 +30,7 @@ export class DialogOption extends Pseudo {
 	 * @hidden
 	 * @deprecated
 	 */
-	public SetActive(Dialog: DialogItem<any>, Selected: () => void): Servant { //eslint-disable-line
+	public SetActive(Dialog: DialogItem<any>, Selected: () => void, resolver: Callback): Servant { //eslint-disable-line
 		if (this._handler) {
 			this._handler(Dialog, this);
 		}
@@ -42,10 +42,11 @@ export class DialogOption extends Pseudo {
 					Selected();
 					if (this.IsQuit) {
 						Dialog.Quit();
+						resolver(".quit");
 						return;
 					}
 					if (this.Dialog) {
-						this.Dialog.Start(Dialog);
+						resolver(this.Dialog.Start(Dialog));
 					}
 				}
 			}, ["_select"]),

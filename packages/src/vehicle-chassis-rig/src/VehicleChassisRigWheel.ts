@@ -257,6 +257,44 @@ export default class VehicleChassisRigWheel extends Pseudo<{
 				};
 			}
 		}, ["_Main"]);
+
+		/*
+		this.usePropertyEffect(() => {
+			if (this.BalanceSupport !== false && this._Main !== undefined) {
+				const Balance = new Instance("Part");
+				Balance.Name = `.WheelBalanceSupport`;
+				Balance.Size = typeIs(this.BalanceSupport, "boolean")
+					? new Vector3(5, this.Size.Y, 3)
+					: typeIs(this.BalanceSupport, "number")
+					? new Vector3(this.BalanceSupport, this.BalanceSupport, this.BalanceSupport)
+					: this.BalanceSupport;
+				Balance.Position = PhysicalWheel.Position.sub(new Vector3(0, Balance.Size.Y * 0.5, 0));
+				Balance.Massless = true;
+				Balance.CustomPhysicalProperties = new PhysicalProperties(0.01, 0, 0, 0, 0);
+
+				const NoCollisionConstraint = new Instance("NoCollisionConstraint");
+				NoCollisionConstraint.Part0 = Balance;
+				NoCollisionConstraint.Part1 = PhysicalWheel;
+				NoCollisionConstraint.Parent = Balance;
+
+				const ue = this.usePropertyEffect(() => {
+					Balance.CollisionGroup = this.CollisionGroup;
+				}, ["CollisionGroup"]);
+
+				const BalanceWeld = new Instance("WeldConstraint");
+				BalanceWeld.Part0 = this._Main;
+				BalanceWeld.Part1 = Balance;
+				BalanceWeld.Parent = Balance;
+				Balance.Parent = Wheel;
+				return () => {
+					ue.Destroy();
+					Balance.Destroy();
+					NoCollisionConstraint.Destroy();
+				};
+			}
+		}, ["BalanceSupport", "_Main"]);
+		*/
+
 		PhysicalWheel.Parent = this.GetRef();
 		this.useReferenceInstanceBehaviour();
 	}

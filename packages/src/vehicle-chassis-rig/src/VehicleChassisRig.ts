@@ -635,25 +635,55 @@ export default class VehicleChassisRig extends Pseudo<{
 		this.usePropertyEffect(() => {
 			if (this.ChassisType === "Bike") {
 				const BikeServant = new Servant();
-				const BikeOrientationConstraint = BikeServant.Keep(new Instance("AlignOrientation"))[0];
-				const BikeOrientationConstraintAttachment0 = BikeServant.Keep(new Instance("Attachment"))[0];
-				BikeOrientationConstraint.Name = "BikeOrientationConstraint";
-				BikeOrientationConstraint.Attachment0 = BikeOrientationConstraintAttachment0;
-				BikeOrientationConstraint.AlignType = Enum.AlignType.AllAxes;
-				BikeOrientationConstraint.Mode = Enum.OrientationAlignmentMode.OneAttachment;
-				BikeOrientationConstraint.Parent = this.GetMain();
-				BikeOrientationConstraintAttachment0.Name = "BikeOrientationConstraintAttachment0";
-				BikeOrientationConstraintAttachment0.Parent = this.GetMain();
+
+				const [gyro] = BikeServant.Keep(new Instance("BodyGyro"));
+				gyro.MaxTorque = new Vector3(10000, 0, 10000);
+				gyro.D = 500;
+				gyro.P = 3000;
+				gyro.Parent = this.GetMain();
+				// const LeftHelper = BikeServant.Keep(new Instance("Part"))[0];
+				// LeftHelper.Name = "LeftHelper";
+				// LeftHelper.Size = new Vector3(1, 2, 1);
+				// LeftHelper.CFrame = this.GetMain().CFrame.mul(
+				// 	new CFrame(new Vector3(this.GetMain().Size.X * 0.5 + 2).mul(-1)),
+				// );
+				// LeftHelper.CanCollide = false;
+				// const LeftHelperWeld = BikeServant.Keep(new Instance("WeldConstraint"))[0];
+				// LeftHelperWeld.Part0 = this.GetMain();
+				// LeftHelperWeld.Part1 = LeftHelper;
+				// LeftHelperWeld.Parent = LeftHelper;
+				// LeftHelper.Parent = this.GetMain();
+
+				// const Rotate = BikeServant.Keep(new Instance("Rotate"))[0];
+				// Rotate.Part0 = LeftHelper;
+				// Rotate.Part1 = this.GetMain();
+				// Rotate.Parent = this.GetMain();
+				// const BikeBodyGyro = BikeServant.Keep(new Instance("BodyGyro"))[0];
+				// BikeBodyGyro.MaxTorque = new Vector3(600000, 0, 600000);
+				// BikeBodyGyro.P = 30000;
+				// BikeBodyGyro.D = 700;
+				// BikeBodyGyro.Parent = this.GetMain();
+
+				// const BikeOrientationConstraint = BikeServant.Keep(new Instance("AlignOrientation"))[0];
+				// const BikeOrientationConstraintAttachment0 = BikeServant.Keep(new Instance("Attachment"))[0];
+				// BikeOrientationConstraint.Name = "BikeOrientationConstraint";
+				// BikeOrientationConstraint.Attachment0 = BikeOrientationConstraintAttachment0;
+				// BikeOrientationConstraint.AlignType = Enum.AlignType.AllAxes;
+				// BikeOrientationConstraint.Mode = Enum.OrientationAlignmentMode.OneAttachment;
+				// BikeOrientationConstraint.Enabled = false;
+				// BikeOrientationConstraint.Parent = this.GetMain();
+				// BikeOrientationConstraintAttachment0.Name = "BikeOrientationConstraintAttachment0";
+				// BikeOrientationConstraintAttachment0.Parent = this.GetMain();
 
 				BikeServant.Keep(
 					this.usePropertyEffect(() => {
 						if (this._networkOwnerActive === undefined) {
 							const c = game.GetService("RunService").Heartbeat.Connect(() => {
-								BikeOrientationConstraint.PrimaryAxis = Vector3.xAxis.add(
-									this.GetMain()
-										.CFrame.LookVector.Cross(Vector3.xAxis)
-										.mul(this.SteerFloat * 1),
-								).Unit;
+								// BikeOrientationConstraint.PrimaryAxis = Vector3.xAxis.add(
+								// 	this.GetMain()
+								// 		.CFrame.LookVector.Cross(Vector3.xAxis)
+								// 		.mul(this.SteerFloat * 1),
+								// ).Unit;
 							});
 							return () => {
 								c.Disconnect();
@@ -662,20 +692,20 @@ export default class VehicleChassisRig extends Pseudo<{
 					}, ["_networkOwnerActive"]),
 				);
 
-				BikeServant.Keep(
-					this.usePropertyEffect(() => {
-						BikeOrientationConstraint.MaxTorque = this.BikeOrientationMaxTorque;
-						BikeOrientationConstraint.Responsiveness = this.BikeOrientationResponsiveness;
-					}, ["BikeOrientationMaxTorque", "BikeOrientationResponsiveness"]),
-				);
+				// BikeServant.Keep(
+				// 	this.usePropertyEffect(() => {
+				// 		BikeOrientationConstraint.MaxTorque = this.BikeOrientationMaxTorque;
+				// 		BikeOrientationConstraint.Responsiveness = this.BikeOrientationResponsiveness;
+				// 	}, ["BikeOrientationMaxTorque", "BikeOrientationResponsiveness"]),
+				// );
 
 				BikeServant.Keep(
 					this.usePropertyEffect(() => {
-						BikeOrientationConstraint.CFrame = CFrame.Angles(
-							math.rad(this.BikeXAxisRotation),
-							math.rad(this.BikeYAxisRotation),
-							math.rad(this.BikeZAxisRotation),
-						);
+						// BikeOrientationConstraint.CFrame = CFrame.Angles(
+						// 	math.rad(this.BikeXAxisRotation),
+						// 	math.rad(this.BikeYAxisRotation),
+						// 	math.rad(this.BikeZAxisRotation),
+						// );
 					}, ["BikeXAxisRotation", "BikeYAxisRotation", "BikeZAxisRotation"]),
 				);
 

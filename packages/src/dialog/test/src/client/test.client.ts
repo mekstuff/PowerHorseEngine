@@ -45,6 +45,7 @@ const Tree = new DialogTree<boolean>({
 		options: [
 			{ key: "how-it-works", text: "How it works?" },
 			{ key: "different-route", text: "Option A" },
+			{ quit: true, text: "Quit" },
 		],
 		text: "This is a example of what the dialog package is capable of!",
 		handler: Handler,
@@ -72,4 +73,6 @@ const Tree = new DialogTree<boolean>({
 	},
 });
 
-Tree.Start();
+Tree.Start().andThen(() => {
+	print("completed");
+});

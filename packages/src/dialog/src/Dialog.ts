@@ -78,14 +78,18 @@ export class Dialog<T = unknown> extends Pseudo<{
 			const _setactiveServants: Servant[] = [];
 			this._dev._options.forEach((option) => {
 				assert(typeIs(_onOptionHandler, "function"), `onOption callback handler missing for dialog.`);
-				const activeServant = option.SetActive(this, () => {
-					this.useAssignReadonlyProperty("Active", false);
-					_setactiveServants.forEach((activeServant) => {
-						activeServant.Destroy();
-					});
-					StartServant.Destroy();
-					resolve();
-				});
+				const activeServant = option.SetActive(
+					this,
+					() => {
+						this.useAssignReadonlyProperty("Active", false);
+						_setactiveServants.forEach((activeServant) => {
+							activeServant.Destroy();
+						});
+						StartServant.Destroy();
+						// resolve();
+					},
+					resolve,
+				);
 				_setactiveServants.push(activeServant);
 				if (!option._handler) {
 					_onOptionHandler(option, activeServant);
