@@ -250,8 +250,8 @@ export class InteractiveNPC<
 		Character.PivotTo(typeIs(Position, "Vector3") ? new CFrame(Position) : Position);
 	}
 
-	constructor() {
-		super("InteractiveNPC", CreateR15Rig());
+	constructor(r15RigInstance?: Model) {
+		super("InteractiveNPC", r15RigInstance ?? CreateR15Rig());
 		this.useReferenceInstanceBehaviour();
 
 		this.SetCharacterPosition(new Vector3(0, 0, 0));
