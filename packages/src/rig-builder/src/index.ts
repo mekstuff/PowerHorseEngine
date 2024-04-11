@@ -153,7 +153,10 @@ export function CreateR15Rig(usePlayerId?: number): R15Character {
 		throw "Could not resolves rigs.";
 	}
 	const nr = rigs["r15-block_rig"].Clone();
-	GetAnimateScript().Parent = nr;
+	const animateScript = GetAnimateScript();
+	animateScript.Disabled = false;
+	animateScript.Parent = nr;
+	
 	if (usePlayerId !== undefined) {
 		try {
 			const hd = Players.GetHumanoidDescriptionFromUserId(usePlayerId);
