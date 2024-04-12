@@ -231,17 +231,5 @@ export class Servant extends Pseudo<{
 	constructor() {
 		super("Servant");
 		this._dev._servanttracker = {};
-
-		let t = 0;
-		const AutoCleanConnection = game.GetService("RunService").Stepped.Connect((_, delta) => {
-			t += delta;
-			if (t > 30) {
-				this.Clean();
-				t = 0;
-			}
-		});
-		this.useDestroying(() => {
-			AutoCleanConnection.Disconnect();
-		});
 	}
 }

@@ -125,7 +125,7 @@ function CreateuseEffectServant(): useEffectServant {
 }
 
 function CalluseEffectServant(ueServant: useEffectServant, isDestroying?: boolean, onlyCleanup?: boolean) {
-	Promise.try(() => {
+	const [success, results] = pcall(() => {
 		const _cleanup = ueServant._dev.ue.cleanup;
 		if (_cleanup) {
 			if (typeIs(_cleanup, "function")) {
@@ -168,9 +168,10 @@ function CalluseEffectServant(ueServant: useEffectServant, isDestroying?: boolea
 				);
 			}
 		}
-	}).catch((err) => {
-		throw `ERROR Occurred when executing your useEffect "${tostring(ueServant)}": ${err}`;
 	});
+	if(!success) {
+		throw `ERROR Occurred when executing your useEffect "${tostring(ueServant)}": ${results}`;
+	};
 }
 export interface Pseudo {
 	/**

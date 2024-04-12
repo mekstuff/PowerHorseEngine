@@ -23,11 +23,11 @@
     }
   },
   "dependencies": {
-    "@mekstuff-rbxts/threader": "file:C:\\Users\\Lanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\threader\\0.1.0"
+    "@mekstuff-rbxts/threader": "file:C:\\Users\\Olanzo\\.zen-cli\\packages\\@mekstuff-rbxts\\threader\\0.1.0"
   },
   "devDependencies": {
-    "@rbxts/compiler-types": "2.1.0-types.1",
-    "@rbxts/types": "^1.0.688",
+    "@rbxts/compiler-types": "^2.3.0-types.0",
+    "@rbxts/types": "^1.0.766",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
     "eslint": "^8.42.0",

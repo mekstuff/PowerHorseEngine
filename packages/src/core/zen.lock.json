@@ -1,11 +1,1 @@
-{
-  "pkgs": {
-    "@mekstuff-rbxts/threader": {
-      "signature": "_zvf8K8oXUbpYc6AfKbYEb9lO8U=2b61ff5193633e3c050f",
-      "version": "^0.1.0",
-      "version_resolve": "0.1.0"
-    }
-  },
-  "tree": {},
-  "version": "0"
-}
+{"pkgs":{"@mekstuff-rbxts/threader":{"signature":"qiDXH2N6FsAqAPeRtxLthc7inPo=9de0300f40596b59dd2a","version":"^0.1.0","version_resolve":"0.1.0"}},"tree":{},"version":"0"}
