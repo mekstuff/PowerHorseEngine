@@ -1,24 +1,38 @@
 /* eslint-disable roblox-ts/no-private-identifier */
 
-import { Reactive } from "@mekstuff-rbxts/core";
+import { Pseudo } from "@mekstuff-rbxts/core";
 
-const reactive0 = Reactive(undefined);
+const TestOne = new (class Test1 extends Pseudo {
+    Property1 = false;
+    constructor(){
+        super("Test1");
+    }
+})();
+const TestTwo = new (class Test2 extends Pseudo {
+    Property2 = true;
+    constructor(){
+        super("Test2");
+    }
+})();
 
-// class Test extends Pseudo {
-// 	Property = 0;
-// 	constructor() {
-// 		super("Test");
-// 		this.usePropertyEffect(
-// 			(s) => {
-// 				print("Property updated: ", this.Property, s);
-// 				return () => {
-// 					print("Property cleanup", s);
-// 				};
-// 			},
-// 			["Property"],
-// 		);
-// 		this.GetRef().Parent = game.Workspace;
-// 	}
-// }
+TestOne.GetRef().Parent = game.Workspace;
+TestTwo.GetRef().Parent = game.Workspace;
 
-// new Test();
+const combined = TestOne.useCombinePropertyEffects((e) => {
+    print("combined update", e)
+    if(TestOne.Property1 === true && TestTwo.Property2 === true) {
+        combined.Destroy();
+        print("cleanup")
+    }
+    return (...args) => {
+        print("Combined cleanup: ", ...args)
+    }
+}, TestOne.usePropertyEffectCombine(() => {
+    // print("test one updated")
+    return (...args) => {
+        print("test one cleanup: ", ...args)
+    }
+}, ["Property1"]), TestTwo.usePropertyEffectCombine(() => {
+    // print("test two updated")
+}, ["Property2"])
+);

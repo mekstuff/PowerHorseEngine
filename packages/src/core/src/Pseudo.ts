@@ -914,6 +914,37 @@ export abstract class Pseudo<T extends object = {}> {
 		return usePropertyEffectServant;
 	}
 
+	/*
+	 *
+	 */
+	public useCombinePropertyEffects(callback: usePropertyEffectCallback, ...usePropertyEffectServants: (PHe.Pseudos["Servant"])[]): PHe.Pseudos["Servant"] {
+		let _callbackServant = CreateuseEffectServant();
+		let _isfirstRun = true;
+		_callbackServant._dev.ue.cb = callback;
+		usePropertyEffectServants.forEach((servant, i) => {
+			_callbackServant.Keep(servant);
+			const oldCB = (servant as useEffectServant)._dev.ue.cb;
+			(servant as useEffectServant)._dev.ue.cb = (_executingServant) => {
+				const res = oldCB(_executingServant);
+				if(_isfirstRun){
+					return res;
+				}
+				CalluseEffectServant(_callbackServant);
+				return res;
+			}
+			CalluseEffectServant(servant as useEffectServant);
+			if(i === usePropertyEffectServants.size() - 1){
+				CalluseEffectServant(_callbackServant); // only call the callback for the last useEffect servant in the index.
+				_isfirstRun = false;
+			}
+		});
+		return _callbackServant;
+	}
+
+	public usePropertyEffectCombine(callback: usePropertyEffectCallback,  dependencies?: string[]): PHe.Pseudos["Servant"] {
+		return this.usePropertyRender(callback, dependencies)
+	}
+
 	/**
 	 * Destroys the Pseudo.
 	 */
