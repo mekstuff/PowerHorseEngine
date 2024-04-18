@@ -16,12 +16,18 @@ declare global {
 	}
 }
 
+export enum OptionsDisplayType {
+	Radius,
+	VertStack,
+}
+
 export class MultiProximityPrompt extends Pseudo {
 	public Activated = false;
 	public AutoActivation = true;
 	public RootHiddenWhenActivated = true;
 	public Options: MultiProximityPrompt[] | undefined = undefined;
-	public OptionsOffset: Vector2 = new Vector2(220, 100);
+	public OptionsOffset: Vector2 = new Vector2(0, 0);
+	public OptionsDisplayType = OptionsDisplayType.Radius;
 	private _rootParent: Instance | undefined = undefined;
 	private _hidden = false;
 
@@ -74,13 +80,20 @@ export class MultiProximityPrompt extends Pseudo {
 						const optionsServant = new Servant();
 						const optAngle = 360 / this.Options.size();
 						this.Options.forEach((option, i) => {
-							const xAng = math.cos(math.rad(i * optAngle));
-							const yAng = math.sin(math.rad(i * optAngle));
+
 							optionsServant.Keep(
 								option.usePropertyEffect(() => {
 									return this.usePropertyEffect(() => {
-										option.RootPrompt!.UIOffset = new Vector2(xAng, yAng).mul(this.OptionsOffset);
-									}, ["OptionsOffset"]);
+										if(this.OptionsDisplayType === OptionsDisplayType.Radius) {
+											const xAng = math.cos(math.rad(i * optAngle));
+											const yAng = math.sin(math.rad(i * optAngle));
+											option.RootPrompt!.UIOffset = new Vector2(xAng, yAng).mul(this.OptionsOffset);
+											return;
+										};
+										if(this.OptionsDisplayType === OptionsDisplayType.VertStack) {
+											option.RootPrompt!.UIOffset = new Vector2(0, i * 10).mul(this.OptionsOffset)
+										}
+									}, ["OptionsOffset", "OptionsDisplayType"]);
 								}, ["RootPrompt"]),
 							);
 							optionsServant.Keep(

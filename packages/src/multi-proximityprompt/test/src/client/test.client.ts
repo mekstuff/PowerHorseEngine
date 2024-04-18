@@ -1,4 +1,4 @@
-import { MultiProximityPrompt } from "@mekstuff-rbxts/multi-proximityprompt";
+import { MultiProximityPrompt, OptionsDisplayType } from "@mekstuff-rbxts/multi-proximityprompt";
 
 const SpawnLoc = game.GetService("Workspace").WaitForChild("SpawnLocation") as SpawnLocation;
 
@@ -26,6 +26,8 @@ SubPromptQuit.ActionText = "Sub Prompt Quit";
 SubPromptQuit.KeyboardKeyCode = Enum.KeyCode.X;
 
 const MultiPrompt = new MultiProximityPrompt(RootPrompt);
+MultiPrompt.OptionsOffset = new Vector2(0,0);
+MultiPrompt.OptionsDisplayType = OptionsDisplayType.VertStack;
 MultiPrompt.Options = [
 	new MultiProximityPrompt(SubPromptQ),
 	new MultiProximityPrompt(SubPromptO),
