@@ -22,9 +22,6 @@
       },
       "lazy-loader-scroller": {
         "$path": "out/src"
-      },
-      "shared": {
-        "$path": "out/test/src/shared"
       }
     },
     "ServerScriptService": {

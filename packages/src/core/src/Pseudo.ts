@@ -358,6 +358,8 @@ type PseudoDevDefs<T extends object> = {
 	) => void;
 	assign: (targetItem: unknown, value: unknown) => void;
 	size: () => number;
+	_destroyed: boolean;
+	_debug: (logType: "warn" | "print" | "error", ...args: unknown[]) => void
 } & UnknownArray;
 /**
  * Core class of pseudo objects.
@@ -392,6 +394,7 @@ export abstract class Pseudo<T extends object = {}> {
 	 * whenever the pseudo is destroyed. (Good for storing Servants,Maids,etc.)
 	 */
 	public _dev: T & PseudoDevDefs<T> = {
+		_destroyed: false,
 		has: (targetItem) => {
 			const _dev = this._dev as UnknownArray;
 			if (_dev[targetItem as string] !== undefined) {
@@ -421,6 +424,21 @@ export abstract class Pseudo<T extends object = {}> {
 			}
 			return s;
 		},
+		// _debug(logType, ...args) {
+		// 	const consoleLogger = (logType === "error" ? error : logType === "print" ? print : warn);
+		// 	if(logType === "print") {
+		// 		consoleLogger(...args);
+		// 		return;
+		// 	}
+		// 	let msg = args[0] as string;
+		// 	(args as string[]).forEach((x,i) => {
+		// 		if(i === 0) {
+		// 			return;
+		// 		}
+		// 		msg = `[${x}] ${msg}`;
+		// 	})
+		// 	msg = `${msg}\n\n${tostring(self)}`
+		// },
 	} as T & PseudoDevDefs<T>;
 
 	/**
@@ -949,6 +967,10 @@ export abstract class Pseudo<T extends object = {}> {
 	 * Destroys the Pseudo.
 	 */
 	public Destroy(...args: unknown[]) {
+		if(this._dev._destroyed === true) {
+			return;
+		}
+		this._dev._destroyed = true;
 		// run destroy functions that were created using the "fake" destroy signal or "sequential" useDestroying callbacks.
 		this.runDestroyCallbacks(...args);
 		// cleanup everything in _dev.

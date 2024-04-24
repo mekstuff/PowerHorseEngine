@@ -130,6 +130,12 @@ export class Servant extends Pseudo<{
 
 			// this._dev._servanttracker[tostring(math.random())] = pushValue;
 		});
+		if(this._dev._destroyed === true){
+			// If the Pseudo was destroyed already, automatically Free and clean these new additions instantly.
+			warn(`new Trackable items will be dropped instantly as the Servant was Destroyed prior to the requests.`);
+			this.Free(...TrackableItems);
+			this.Clean();
+		}
 		return $tuple(...TrackableItems);
 	}
 	/**
